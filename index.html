@@ -1,0 +1,328 @@
+---
+layout: default
+title: Home
+description: A JavaScript library to display Photo Sphere panoramas
+isHome: true
+---
+
+<section class="bs-docs-section">
+  <h1 id="presentation" class="page-header">Presentation</h1>
+  
+  <blockquote style="text-align:justify">
+    Photo Sphere Viewer is a JavaScript library which renders 360° panoramas shots with Photo Sphere, the new camera mode of Android 4.2 Jelly Bean and above.<br><br>
+    Photo Sphere Viewer is pure JS and based on <a href="http://threejs.org/">Three.js</a>, allowing very good performances on WebGL enabled systems (most recent browsers) and reasonably good performances on other systems supporting HTML Canvas.<br><br>
+    And it works with touch screens too !
+  </blockquote>
+
+  <div class="bs-callout bs-callout-info">
+    <h4>Thanks to @JeremyHeleine</h4>
+    <p>I forked the original <a href="http://jeremyheleine.me/#photo-sphere-viewer">Photo Sphere Viewer by Jérémy Heleine</a> to provide a (IMHO) better JS architecture, separated stylesheet and new options I needed for <a href="http://piwigo.org/ext/extension_view.php?eid=794">PhotoSphere for Piwigo</a>.</p>
+  </div>
+
+  <div id="photosphere"></div>
+</section>
+
+<section class="bs-docs-section">
+  <h1 id="usage" class="page-header">Usage</h1>
+
+  <h2 id="installation">Installation</h2>
+
+  <p>The only dependency of PSV is Three.js. You just have to include PSV CSS and JS in your page and you are ready.</p>
+{% highlight html %}
+<link rel="stylesheet" href="Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
+
+<script src="three.js/three.min.js"></script>
+<script src="Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
+
+<script>
+PhotoSphereViewer({ /* ... */});
+</script>
+{% endhighlight %}
+
+  <p>PSV can also be used with CommonJS :</p>
+{% highlight javascript %}
+require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
+  PhotoSphereViewer({ /* ... */});
+});
+{% endhighlight %}
+
+  <h2 id="options">Options</h2>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th style="width: 130px;">Name</th>
+          <th style="width: 100px;">type</th>
+          <th style="width: 150px;">default</th>
+          <th>description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>container</td>
+          <td>HTMLElement</td>
+          <td><span class="label label-danger">required</span></td>
+          <td>HTML element which will contain the panorama.</td>
+        </tr>
+        <tr>
+          <td>panorama</td>
+          <td>String</td>
+          <td><span class="label label-danger">required</span></td>
+          <td>Path to the panorama image.</td>
+        </tr>
+        <tr>
+          <td>autoload</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Automatically load the panorama, if <code>false</code> you must use <code>load</code> method later.</td>
+        </tr>
+        <tr>
+          <td>min_fov</td>
+          <td>integer</td>
+          <td>30</td>
+          <td>Minimal field of view (corresponds to max zoom), between 1 and 179.</td>
+        </tr>
+        <tr>
+          <td>max_fov</td>
+          <td>integer</td>
+          <td>90</td>
+          <td>Maximal field of view (corresponds to min zoom), between 1 and 179.</td>
+        </tr>
+        <tr>
+          <td>default_fov</td>
+          <td>integer</td>
+          <td><code>max_fov</code></td>
+          <td>Initial field of view, between <code>min_fov</code> and <code>max_fov</code>.</td>
+        </tr>
+        <tr>
+          <td>default_long</td>
+          <td>double</td>
+          <td>0</td>
+          <td>Initial longitude in radians, between 0 and 2&pi;.</td>
+        </tr>
+        <tr>
+          <td>default_lat</td>
+          <td>double</td>
+          <td>0</td>
+          <td>Initial latitude in radians, between -&pi;/2 and &pi;/2.</td>
+        </tr>
+        <tr>
+          <td>time_anim</td>
+          <td>integer|boolean</td>
+          <td>2000</td>
+          <td>Idle time (milliseconds) before the panorama automatically starts rotating. <code>false</code> to deactivate.</td>
+        </tr>
+        <tr>
+          <td>anim_speed</td>
+          <td>string</td>
+          <td>'2rpm'</td>
+          <td>Automatic rotation speed in radians/degrees/revolutions per second/minute.
+            <button class="btn btn-primary btn-xs" data-bootbox="anim_speed_units">More</button>
+            <div id="anim_speed_units" title="Animation speed units" class="hidden">
+              <p>Different units are possible for the <code>anim_speed</code> parameter :</p>
+              <ul>
+                <li>rpm, revolutions per minute</li>
+                <li>rps, revolutions per second</li>
+                <li>dpm, degrees per minute</li>
+                <li>dps, degrees per second</li>
+                <li>radians per minute</li>
+                <li>radians per second</li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>anim_lat</td>
+          <td>double</td>
+          <td><code>default_lat</code></td>
+          <td>Latitude at which the automatic rotation is performed, in radians.</td>
+        </tr>
+        <tr>
+          <td>navbar</td>
+          <td>boolean|object</td>
+          <td>false</td>
+          <td>Enable or disable the navigation bar, you can also choose which buttons are displayed with an <button class="btn btn-primary btn-xs" data-bootbox="navbar_object">hashmap</button>.
+            <div id="navbar_object" title="Navbar buttons" class="hidden">
+              <p>Set <code>navbar</code> to an hashmap of booleans to enable/disable each buttons independently, you can also disable all buttons if you want to display the caption only.</p>
+{% highlight javascript %}
+navbar: {
+  autorotate: true,
+  zoom: true,
+  fullscreen: true
+}
+{% endhighlight %}
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>caption</td>
+          <td>String</td>
+          <td>null</td>
+          <td>A text (can contain HTML) displayed in the navbar, if visible.</td>
+        </tr>
+        <tr>
+          <td>loading_img</td>
+          <td>String</td>
+          <td>null</td>
+          <td>Path to an image displayed in the center of the loading circle.</td>
+        </tr>
+        <tr>
+          <td>loading_txt</td>
+          <td>String</td>
+          <td>'Loading...'</td>
+          <td>Text displayed in the center of the loading circle, only if <code>loading_img</code> is not provided.</td>
+        </tr>
+        <tr>
+          <td>size</td>
+          <td>Object</td>
+          <td>null</td>
+          <td>The final size if the panorama container (e.g. <code>{width: 500, height: 300}</code>. By default the size of <code>container</code> is used and is followed during window resizes.</td>
+        </tr>
+        <tr>
+          <td>mousewheel</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Listen to mouse wheel events to zoom in and out.</td>
+        </tr>
+        <tr>
+          <td>mousemove</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Listen to mouse click+move events to rotate the view.</td>
+        </tr>
+        <tr>
+          <td>long_offset</td>
+          <td>double</td>
+          <td>&pi;/720</td>
+          <td>Longitude to travel per pixel moved by mouse/touch.</td>
+        </tr>
+        <tr>
+          <td>lat_offset</td>
+          <td>double</td>
+          <td>&pi;/360</td>
+          <td>Latitude to travel per pixel moved by mouse/touch.</td>
+        </tr>
+        <tr>
+          <td>usexmpdata</td>
+          <td>boolean</td>
+          <td>true</td>
+          <td>Read real image size from XMP data, must be kept <code>true</code> if the panorama has been cropped after shot.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <h2 id="methods">Methods</h2>
+
+  <p>The <code>PhotoSphereViewer</code> function returns an object with the following methods:</p>
+
+  <h4>load</h4>
+  <p>Inits panorama loading if <code>autoload</code> was false.</p>
+
+  <h4>rotate</h4>
+  <p>Rotates the view to specific longitude and latitude.</p>
+{% highlight javascript %}
+viewer.rotate(Math.PI, - Math.PI / 4);
+{% endhighlight %}
+
+  <h4>resize</h4>
+  <p>Resizes the viewer to a specific size in pixels, it will disable the responsiveness.</p>
+{% highlight javascript %}
+viewer.resize(600, 400);
+{% endhighlight %}
+
+  <h4>zoom</h4>
+  <p>Zooms to a specific level between <code>0</code> (max_fov) and <code>100</code> (min_fov).</p>
+{% highlight javascript %}
+viewer.zoom(45);
+{% endhighlight %}
+
+  <h4>zoomIn / zoomOut</h4>
+  <p>Increases or decreases to soom level by <code>1</code>.</p>
+
+  <h4>toggleFullscreen</h4>
+  <p>Enters or exits the fullscreen mode.</p>
+
+  <h4>startAutorotate / stopAutorotate / toggleAutorotate</h4>
+  <p>Enables or disables the automatic rotation.</p>
+
+  <h4>setAnimSpeed</h4>
+  <p>Changes the automatic rotation speed, same format as <code>anim_speed</code> parameter.</p>
+
+
+  <h2 id="events">Events</h2>
+
+  <p>On the same viewer object you can use the <code>on</code> method to listen to various events.</p>
+
+  <h4>ready</h4>
+  <p>Triggered when the panorama image has been loaded and the viewer is ready to perform the first render.</p>
+{% highlight javascript %}
+viewer.on('ready', function() {
+  // do something when the viewer is ready to render
+});
+{% endhighlight %}
+
+  <h4>autorotate</h4>
+  <p>Triggered when the automatic rotation is enabled/disabled.</p>
+{% highlight javascript %}
+viewer.on('autorotate', function(enabled) {
+  // enabled is true or false
+});
+{% endhighlight %}
+
+  <h4>zoom-updated</h4>
+  <p>Triggered when the zoom level changes.</p>
+{% highlight javascript %}
+viewer.on('zoom-updated', function(level) {
+  // level is from 0 to 100
+});
+{% endhighlight %}
+
+  <h4>fullscreen-updated</h4>
+  <p>Triggered when the fullscreen mode is enabled or disabled.</p>
+{% highlight javascript %}
+viewer.on('fullscreen-updated', function(enabled) {
+  // enabled is true or false
+});
+{% endhighlight %}
+
+  <h4>position-updated</h4>
+  <p>Triggered when the view longitude and/or latitude change.</p>
+{% highlight javascript %}
+viewer.on('position-updated', function(long, lat) {
+  // long and lat are doubles
+});
+{% endhighlight %}
+
+  <h4>size-updated</h4>
+  <p>Triggered when the viewer size changes.</p>
+{% highlight javascript %}
+viewer.on('size-updated', function(width, height) {
+  // width and height are in pixels
+});
+{% endhighlight %}
+</section>
+
+
+<style>
+.bs-docs-masthead .version { color:inherit; }
+</style>
+
+<link rel="stylesheet" href="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
+<script src="{{site.github.url}}/dist/three.js/three.min.js"></script>
+<script src="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
+
+<script>
+  var PSV = new PhotoSphereViewer({
+    panorama: '{{site.github.url}}/assets/Bryce-Canyon-National-Park-Mark-Doliner.jpg',
+    container: document.getElementById('photosphere'),
+    navbar: true,
+    caption: 'Bryce Canyon National Park <b>&copy; Mark Doliner</b>',
+    default_fov: 70,
+    size: {
+      height: 500
+    }
+  });
+</script>
