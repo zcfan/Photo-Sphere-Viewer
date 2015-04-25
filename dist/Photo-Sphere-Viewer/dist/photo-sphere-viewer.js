@@ -1,5 +1,5 @@
 /*!
- * Photo Sphere Viewer 3.0.0
+ * Photo Sphere Viewer 3.0.1
  * Copyright (c) 2014-2015 Jérémy Heleine
  * Copyright (c) 2015 Damien "Mistic" Sorel
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -132,6 +132,14 @@ PhotoSphereViewer.DEFAULTS = {
   anim_speed: '2rpm',
   anim_lat: null,
   navbar: false,
+  lang: {
+    autorotate: 'Automatic rotation',
+    zoom: 'Zoom',
+    zoomOut: 'Zoom out',
+    zoomIn: 'Zoom in',
+    download: 'Download',
+    fullscreen: 'Fullscreen'
+  },
   mousewheel: true,
   mousemove: true,
   loading_img: null,
@@ -684,7 +692,6 @@ PhotoSphereViewer.prototype.setAnimSpeed = function(speed) {
     case 'degrees per minute':
     case 'dps':
     case 'degrees per second':
-      // Degrees to radians (rad = deg * pi / 180)
       rad_per_second = speed_value * Math.PI / 180;
       break;
 
@@ -699,11 +706,12 @@ PhotoSphereViewer.prototype.setAnimSpeed = function(speed) {
     case 'revolutions per minute':
     case 'rps':
     case 'revolutions per second':
-    // Unknown unit
-    default:
-      // speed * 2pi
       rad_per_second = speed_value * PhotoSphereViewer.TwoPI;
       break;
+
+    // Unknown unit
+    default:
+      throw 'PhotoSphereViewer: unknown speed unit "' + speed_unit + '"';
   }
 
   // Theta offset
@@ -744,13 +752,14 @@ PhotoSphereViewer.prototype.on = function(name, f) {
 /**
  * Triggers an action
  * @param name (string) Action name
- * @param arg (mixed) An argument to send to the handler functions
+ * @param args... (mixed) Arguments to send to the handler functions
  * @return (void)
  */
-PhotoSphereViewer.prototype.trigger = function(name, arg) {
+PhotoSphereViewer.prototype.trigger = function(name, args) {
+  args = Array.prototype.slice.call(arguments, 1);
   if ((name in this.actions) && this.actions[name].length > 0) {
     for (var i = 0, l = this.actions[name].length; i < l; ++i) {
-      this.actions[name][i](arg);
+      this.actions[name][i].apply(this, args);
     }
   }
 };
@@ -838,14 +847,23 @@ var PSVNavBar = function(psv) {
   this.autorotateBtn = null;
   this.zoomBar = null;
   this.fullscreenBtn = null;
+  this.downloadBtn = null;
   this.caption = null;
 
-  if (typeof this.config != 'object') {
+  if (this.config === true) {
     this.config = {
       autorotate: true,
       zoom: true,
-      fullscreen: true
+      fullscreen: true,
+      download: true
     };
+  }
+  else if (typeof this.config == 'string') {
+    var map = {};
+    this.config.split(/[ ,:]/).forEach(function(button) {
+      map[button] = true;
+    });
+    this.config = map;
   }
 
   this.create();
@@ -876,6 +894,12 @@ PSVNavBar.prototype.create = function() {
   if (this.config.fullscreen) {
     this.fullscreenBtn = new PSVNavBarFullscreenButton(this.psv);
     this.container.appendChild(this.fullscreenBtn.getButton());
+  }
+
+  // Download button
+  if (this.config.download) {
+    this.downloadBtn = new PSVNavBarDownloadButton(this.psv);
+    this.container.appendChild(this.downloadBtn.getButton());
   }
 
   // Caption
@@ -965,6 +989,7 @@ PSVNavBarAutorotateButton.prototype.constructor = PSVNavBarAutorotateButton;
 PSVNavBarAutorotateButton.prototype.create = function() {
   this.button = document.createElement('div');
   this.button.className = 'psv-button psv-autorotate-button';
+  this.button.title = this.psv.config.lang.autorotate;
 
   var autorotate_sphere = document.createElement('div');
   autorotate_sphere.className = 'psv-autorotate-sphere';
@@ -997,6 +1022,7 @@ PSVNavBarFullscreenButton.prototype.constructor = PSVNavBarFullscreenButton;
 PSVNavBarFullscreenButton.prototype.create = function() {
   this.button = document.createElement('div');
   this.button.className = 'psv-button psv-fullscreen-button';
+  this.button.title = this.psv.config.lang.fullscreen;
 
   this.button.appendChild(document.createElement('div'));
   this.button.appendChild(document.createElement('div'));
@@ -1032,6 +1058,7 @@ PSVNavBarZoomButton.prototype.create = function() {
 
   var zoom_minus = document.createElement('div');
   zoom_minus.className = 'psv-zoom-minus';
+  zoom_minus.title = this.psv.config.lang.zoomOut;
   this.button.appendChild(zoom_minus);
 
   var zoom_range_bg = document.createElement('div');
@@ -1040,14 +1067,17 @@ PSVNavBarZoomButton.prototype.create = function() {
 
   this.zoom_range = document.createElement('div');
   this.zoom_range.className = 'psv-zoom-range-line';
+  this.zoom_range.title = this.psv.config.lang.zoom;
   zoom_range_bg.appendChild(this.zoom_range);
 
   this.zoom_value = document.createElement('div');
   this.zoom_value.className = 'psv-zoom-range-handle';
+  this.zoom_value.title = this.psv.config.lang.zoom;
   this.zoom_range.appendChild(this.zoom_value);
 
   var zoom_plus = document.createElement('div');
   zoom_plus.className = 'psv-zoom-plus';
+  zoom_plus.title = this.psv.config.lang.zoomIn;
   this.button.appendChild(zoom_plus);
 
   PSVUtils.addEvent(this.zoom_range, 'mousedown', this._initZoomChangeWithMouse.bind(this));
@@ -1149,6 +1179,47 @@ PSVNavBarZoomButton.prototype._changeZoom = function(x) {
     var zoom_level = user_input / this.zoom_range.offsetWidth * 100;
     this.psv.zoom(zoom_level);
   }
+};
+
+/**
+ * Navigation bar download button class
+ * @param psv (PhotoSphereViewer) A PhotoSphereViewer object
+ */
+var PSVNavBarDownloadButton = function(psv) {
+  PSVNavBarButton.call(this, psv);
+
+  this.create();
+};
+
+PSVNavBarDownloadButton.prototype = Object.create(PSVNavBarButton.prototype);
+PSVNavBarDownloadButton.prototype.constructor = PSVNavBarDownloadButton;
+
+/**
+ * Creates the button
+ * @return (void)
+ */
+PSVNavBarDownloadButton.prototype.create = function() {
+  this.button = document.createElement('div');
+  this.button.className = 'psv-button psv-download-button';
+  this.button.title = this.psv.config.lang.download;
+
+  this.button.appendChild(document.createElement('div'));
+
+  PSVUtils.addEvent(this.button, 'mouseenter', this.toggleActive.bind(this, true));
+  PSVUtils.addEvent(this.button, 'mouseleave', this.toggleActive.bind(this, false));
+  PSVUtils.addEvent(this.button, 'click', this.download.bind(this));
+};
+
+/**
+ * Ask the browser to download the panorama source file
+ */
+PSVNavBarDownloadButton.prototype.download = function() {
+  var link = document.createElement('a');
+  link.href = this.psv.config.panorama;
+  link.download = this.psv.config.panorama;
+  this.psv.config.container.appendChild(link);
+  link.click();
+  this.psv.config.container.removeChild(link);
 };
 
 /**

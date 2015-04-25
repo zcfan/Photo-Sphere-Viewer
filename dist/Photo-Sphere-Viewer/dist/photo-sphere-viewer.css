@@ -1,5 +1,5 @@
 /*!
- * Photo Sphere Viewer 3.0.0
+ * Photo Sphere Viewer 3.0.1
  * Copyright (c) 2014-2015 Jérémy Heleine
  * Copyright (c) 2015 Damien "Mistic" Sorel
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -212,8 +212,8 @@
 
 .psv-fullscreen-button div:before,
 .psv-fullscreen-button div:after {
-  position: absolute;
   content: '';
+  position: absolute;
   width: 6.0px;
   height: 4px;
   border-style: solid;
@@ -254,4 +254,60 @@
   right: 0;
   border-left-width: 0;
   border-top-width: 0;
+}
+
+.psv-download-button {
+  width: 20px;
+  height: 20px;
+}
+
+.psv-download-button:before {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 7px;
+  bottom: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  border-top-width: 0;
+  border-radius: 0;
+  transition: border-radius 0.2s ease;
+}
+
+.psv-download-button:hover:before {
+  border-radius: 2px;
+}
+
+.psv-download-button div {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 50%;
+  left: 50%;
+  margin: -6px;
+  margin-top: -8px;
+  transition: margin-top 0.2s ease;
+}
+
+.psv-download-button:hover div {
+  margin-top: -6px;
+}
+
+.psv-download-button div:before,
+.psv-download-button div:after {
+  content: '';
+  display: block;
+  margin: 0 auto;
+}
+
+.psv-download-button div:before {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.psv-download-button div:after {
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-top-color: rgba(255, 255, 255, 0.7);
 }

@@ -149,11 +149,31 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
 navbar: {
   autorotate: true,
   zoom: true,
-  fullscreen: true
+  fullscreen: true,
+  download: true
 }
 {% endhighlight %}
             </div>
           </td>
+        </tr>
+        <tr>
+          <td>lang</td>
+          <td>object</td>
+          <td><button class="btn btn-primary btn-xs" data-bootbox="navbar_lang">View</button>
+            <div id="navbar_lang" title="Navbar buttons texts" class="hidden">
+{% highlight javascript %}
+lang: {
+  autorotate: 'Automatic rotation',
+  zoom: 'Zoom',
+  zoomOut: 'Zoom out',
+  zoomIn: 'Zoom in',
+  download: 'Download',
+  fullscreen: 'Fullscreen'
+}
+{% endhighlight %}
+            </div>
+          </td>
+          <td>Text of navbar buttons tooltips.</td>
         </tr>
         <tr>
           <td>caption</td>
