@@ -1,15 +1,19 @@
 # name of the software
 name: Photo Sphere Viewer
 # current version of the software
-version: 3.0.1
+version: 3.1.0
 # url of the download button
 downloadUrl: https://github.com/mistic100/Photo-Sphere-Viewer
 # licence of the software
 license: MIT License
 licenseUrl: http://opensource.org/licenses/MIT
 
+favicon: png
+
 # list of additional links on the right of the top menu
 headerLinks:
+  - title: GitHub
+    url: https://github.com/mistic100/Photo-Sphere-Viewer
   - title: StrangePlanet
     url: http://www.strangeplanet.fr
   - title: Jérémy Heleine
@@ -52,6 +56,3 @@ facebook:
 
 
 exclude: ['README.md', 'LICENSE', 'bower.json', 'Gemfile.lock', 'Gemfile']
-
-gems:
-  - jekyll-mentions

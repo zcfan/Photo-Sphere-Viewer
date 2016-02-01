@@ -1,0 +1,338 @@
+---
+layout: default
+title: Markers
+---
+
+<section class="bs-docs-section">
+  <p><b>Photo Sphere Viewer</b> includes a markers system since version 3.1. It allows to define points of interest on
+    the Photo Sphere with optional tooltip and description. It also allows to dynamically add and remove markers on
+    user click/tap. Finally it includes a clickable list of all existing markers.</p>
+
+  <h1 id="demo" class="page-header">Demo</h1>
+
+  <p>The following example contains two blue markers with tooltip and description. Click anywhere on the panorama to
+    add a red marker, click again to remove it. Click on the marker icon in the navbar to display the list of
+    markers, click on one of them to rotate the panorama.</p>
+
+  <div id="photosphere"></div>
+</section>
+
+<section class="bs-docs-section">
+  <h1 id="usage" class="page-header">Usage</h1>
+
+  <h2 id="config">Configuration</h2>
+
+  <p>Markers can be added at startup with the <a href="{{site.github.url}}/index.html#options"><code>markers</code>
+    option</a> or after load with the methods detailed further in this page.<br>
+    In both case the list of marker parameters is as below:</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th style="width: 130px;">Name</th>
+        <th style="width: 100px;">type</th>
+        <th style="width: 150px;">default</th>
+        <th>description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>id</td>
+        <td>string</td>
+        <td><span class="label label-danger">required</span></td>
+        <td>Unique identifier of the marker.</td>
+      </tr>
+      <tr>
+        <td>image</td>
+        <td>string</td>
+        <td rowspan="2"><span class="label label-danger">required</span><br>image <b>or</b> html</td>
+        <td>Path to the image representing the marker.</td>
+      </tr>
+      <tr>
+        <td>html</td>
+        <td>string</td>
+        <td>HTML representation of the marker.</td>
+      </tr>
+      <tr>
+        <td>width & height</td>
+        <td>int</td>
+        <td><span class="label label-danger">required</span> for image<br><span
+          class="label label-warning">recommended</span> for html
+        </td>
+        <td>Size of the marker. The size is required for image markers but is optional for HTML markers.</td>
+      </tr>
+      <tr>
+        <td>x & y</td>
+        <td>int</td>
+        <td rowspan="2"><span class="label label-danger">required</span> x/y <b>or</b> latitude/longitude</td>
+        <td>Position of the marker <b>in texture coordinates</b> (pixels).</td>
+      </tr>
+      <tr>
+        <td>latitude & longitude</td>
+        <td>double</td>
+        <td>Position of the marker <b>in spherical coordinates</b> (radians).</td>
+      </tr>
+      <tr>
+        <td>className</td>
+        <td>string</td>
+        <td></td>
+        <td>Optional CSS class(es) added to the marker element.</td>
+      </tr>
+      <tr>
+        <td>anchor</td>
+        <td>string</td>
+        <td>'center center'</td>
+        <td>Defines where the marker image toward the marker point. Any CSS position is valid like <code>bottom
+          center</code> or <code>20% 80%</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>visible</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Is the marker visible once added. If hidden, the marker will have to be edited through
+          <code>getMarker</code> method later.
+        </td>
+      </tr>
+      <tr>
+        <td>tooltip</td>
+        <td>string|Object</td>
+        <td></td>
+        <td>Tooltip content of the marker or object defining the tooltip.</td>
+      </tr>
+      <tr>
+        <td>tooltip.content</td>
+        <td>string</td>
+        <td></td>
+        <td>Tooltip content.</td>
+      </tr>
+      <tr>
+        <td>tooltip.position</td>
+        <td>string</td>
+        <td>'top center'</td>
+        <td>Tooltip position toward the marker. Accepted values are combinations of <code>top, center, bottom</code> and
+          <code>left, center, right</code> with the exception of <code>center center</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>content</td>
+        <td>string</td>
+        <td></td>
+        <td>HTML content that will be displayed on the side panel when the marker is clicked.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 id="methods">Methods</h2>
+
+  <h4><code>.addMarker(marker [, render])</code></h4>
+
+  <p>Adds a new marker to the viewer. The original <code>marker</code> object is read-only (a deep copy is made). The
+    method returns the actual copy of the marker with additional properties :</p>
+  <ul>
+    <li><code>$el</code> reference to the HTMLElement int the viewer</li>
+    <li><code>longitude</code> and <code>latitude</code> computed from <code>x</code> and <code>y</code> if you use
+      pixel positioning
+    </li>
+  </ul>
+  <p>Set the <code>render</code> flag to false to postpone viewer update (usefull when adding a batch of markers), call
+    <code>render()</code> method when done.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.addMarker({
+  id: 'marker-1',
+  image: 'path/to/pin.png',
+  width: 32,
+  height: 32,
+  x: 500,
+  y: 1000
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.updateMarker(marker [, render])</code></h4>
+
+  <p>Updates the existing marker with the same <code>id</code>. Every property can be changed but you can't switch
+    between <code>image</code> and <code>html</code>.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.updateMarker({
+  id: 'marker-1',
+  x: 1000
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.getMarker(marker | markerId)</code></h4>
+
+  <p>Returns the internal marker object from a marker object or a marker id.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+var marker = viewer.addMarker('marker-1');
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.getCurrentMarker()</code></h4>
+
+  <p>Returns the last marker selected by the user or <code>null</code>.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+var currentMarker = viewer.getCurrentMarker();
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.removeMarker(marker | markerId [, render])</code></h4>
+
+  <p>Removes a marker from the viewer.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.removeMarker('marker-1');
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.gotoMarker(marker | markerId [, duration | speed])</code></h4>
+
+  <p>Rotate the view to face the marker. If the last parameter is provided (see the <a
+    href="{{site.github.url}}/index.html#methods"><code>animate()</code> method</a>) the camera will rotate
+    smoothly to the the marker.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.gotoMarker('marker-1', 1500);
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.hideMarker(marker | markerId)</code> / <code>.showMarker(marker | markerId)</code> / <code>.toggleMarker(marker | markerId)</code></h4>
+
+  <h2 id="events">Events</h2>
+
+  <h4><code>select-marker [marker]</code></h4>
+
+  <p>Triggered when the user click on a marker. The marker can be retrieved from outside the event handler with <code>getCurrentMarker()</code>
+    method.</p>
+
+  <h4><code>unselect-marker</code></h4>
+
+  <p>Triggered when a marker was selected a the user click elsewhere.</p>
+</section>
+
+
+<link rel="stylesheet" href="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
+<script src="{{site.github.url}}/dist/three.js/three.min.js"></script>
+<script src="{{site.github.url}}/dist/three.js/CanvasRenderer.js"></script>
+<script src="{{site.github.url}}/dist/three.js/Projector.js"></script>
+<script src="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
+
+<script type="text/template" id="map-content">
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d3238538.6948248185!2d-112.5001998515625!3d37.56365195744152!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x6be9d8fbbeac6d06!2sParc+national+de+Bryce+Canyon!5e0!3m2!1sfr!2sfr!4v1454251445371"
+    width="100%" height="300" frameborder="0" style="border:0" allowfullscreen></iframe>
+</script>
+
+<script type="text/template" id="lorem-content">
+  <h1>HTML Ipsum Presents</h1>
+
+  <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas.
+    Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam
+    egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et
+    sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet,
+    wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac
+    dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+
+  <h2>Header Level 2</h2>
+
+  <ol>
+    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+    <li>Aliquam tincidunt mauris eu risus.</li>
+  </ol>
+
+  <blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet
+    congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis,
+    tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>
+
+  <h3>Header Level 3</h3>
+
+  <ul>
+    <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+    <li>Aliquam tincidunt mauris eu risus.</li>
+  </ul>
+
+  <pre><code>
+    #header h1 a {
+    display: block;
+    width: 300px;
+    height: 80px;
+    }
+  </code></pre>
+</script>
+
+<script>
+  var PSV = new PhotoSphereViewer({
+    panorama: '{{site.github.url}}/assets/Bryce-Canyon-National-Park-Mark-Doliner.jpg',
+    container: 'photosphere',
+    loading_img: '{{site.github.url}}/assets/photosphere-logo.gif',
+    navbar: true,
+    time_anim: false,
+    caption: 'Bryce Canyon National Park <b>&copy; Mark Doliner</b>',
+    default_fov: 70,
+    default_lat: 0.3,
+    mousewheel: false,
+    size: {
+      height: 500
+    },
+    markers: [{
+      id: 'pic',
+      longitude: 0.05254,
+      latitude: 0.28842,
+      image: '{{site.github.url}}/assets/pin-blue.png',
+      width: 32,
+      height: 32,
+      anchor: 'bottom center',
+      tooltip: 'View on Google Maps',
+      content: document.getElementById('map-content').innerHTML
+    }, {
+      id: 'path',
+      longitude: 5.69810,
+      latitude: -0.13770,
+      image: '{{site.github.url}}/assets/pin-blue.png',
+      width: 32,
+      height: 32,
+      anchor: 'bottom center',
+      tooltip: 'Lorem ipsum dolor ist amet et consecturo.',
+      content: document.getElementById('lorem-content').innerHTML
+    }, {
+      id: 'text',
+      longitude: 0,
+      latitude: 0,
+      html: 'Textual <b>marker</b> &hearts;',
+      anchor: 'bottom right',
+      style: {
+        maxWidth: '100px',
+        color: 'white',
+        fontSize: '20px',
+        fontFamily: 'Helvetica, sans-serif',
+        textAlign: 'center'
+      }
+    }]
+  });
+
+  PSV.on('click', function(e) {
+    PSV.addMarker({
+      id: '#' + Math.random(),
+      longitude: e.longitude,
+      latitude: e.latitude,
+      image: '{{site.github.url}}/assets/pin-red.png',
+      width: 32,
+      height: 32,
+      anchor: 'bottom center',
+      tooltip: 'Generated pin'
+    });
+  });
+
+  PSV.on('select-marker', function(marker) {
+    if (marker.id.indexOf('#') === 0) {
+      PSV.removeMarker(marker);
+    }
+  });
+</script>

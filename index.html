@@ -1,22 +1,28 @@
 ---
 layout: default
 title: Home
-description: A JavaScript library to display Photo Sphere panoramas
+description: A JavaScript library to display Photo Sphere panoramas<a href="http://photo-sphere-viewer.js.org/markers.html" class="markers-announce">📌 Now with markers! </a>
 isHome: true
 ---
 
 <section class="bs-docs-section">
   <h1 id="presentation" class="page-header">Presentation</h1>
-  
+
   <blockquote style="text-align:justify">
-    Photo Sphere Viewer is a JavaScript library which renders 360° panoramas shots with Photo Sphere, the new camera mode of Android 4.2 Jelly Bean and above.<br><br>
-    Photo Sphere Viewer is pure JS and based on <a href="http://threejs.org/">Three.js</a>, allowing very good performances on WebGL enabled systems (most recent browsers) and reasonably good performances on other systems supporting HTML Canvas.<br><br>
+    Photo Sphere Viewer is a JavaScript library which renders 360° panoramas shots with Photo Sphere, the new camera
+    mode of Android 4.2 Jelly Bean and above.<br><br>
+    Photo Sphere Viewer is pure JS and based on <a href="http://threejs.org/">Three.js</a>, allowing very good
+    performances on WebGL enabled systems (most recent browsers) and reasonably good performances on other systems
+    supporting HTML Canvas.<br><br>
     And it works with touch screens too !
   </blockquote>
 
   <div class="bs-callout bs-callout-info">
-    <h4>Thanks to @JeremyHeleine</h4>
-    <p>I forked the original <a href="http://jeremyheleine.me/#photo-sphere-viewer">Photo Sphere Viewer by Jérémy Heleine</a> to provide a (IMHO) better JS architecture, separated stylesheet and new options I needed for <a href="http://piwigo.org/ext/extension_view.php?eid=794">PhotoSphere for Piwigo</a>.</p>
+    <h4>Thanks to <a href="https://github.com/JeremyHeleine">@JeremyHeleine</a></h4>
+
+    <p>I forked the original <a href="http://jeremyheleine.me/#photo-sphere-viewer">Photo Sphere Viewer by Jérémy
+      Heleine</a> to provide a (IMHO) better JS architecture, separated stylesheet and new options I needed for <a
+      href="http://piwigo.org/ext/extension_view.php?eid=794">PhotoSphere for Piwigo</a>.</p>
   </div>
 
   <div id="photosphere"></div>
@@ -28,6 +34,7 @@ isHome: true
   <h2 id="installation">Installation</h2>
 
   <p>The only dependency of PSV is Three.js. You just have to include PSV CSS and JS in your page and you are ready.</p>
+  <!-- @formatter:off -->
 {% highlight html %}
 <link rel="stylesheet" href="Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
 
@@ -35,22 +42,29 @@ isHome: true
 <script src="Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
 
 <script>
-PhotoSphereViewer({ /* ... */});
+  var viewer = PhotoSphereViewer({ /* ... */});
 </script>
 {% endhighlight %}
+<!-- @formatter:on -->
 
   <p>PSV can also be used with CommonJS :</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
-  PhotoSphereViewer({ /* ... */});
+  var viewer = PhotoSphereViewer({ /* ... */});
 });
 {% endhighlight %}
+<!-- @formatter:on -->
 
   <div class="bs-callout bs-callout-danger">
     <h4>Three.js files</h4>
-    <p>In order to get Photo Sphere Viewer working on browsers without WebGL (Internet Explorer and older versions of other browsers),
+
+    <p>In order to get Photo Sphere Viewer working on browsers without WebGL (Internet Explorer and older versions of
+      other browsers),
       you will need to additional files from Three.js examples:
-      <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/CanvasRenderer.js">CanvasRenderer.js</a> and
+      <a
+        href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/CanvasRenderer.js">CanvasRenderer.js</a>
+      and
       <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/Projector.js">Project.js</a>.<br>
       Include them after Three.js and before PhotoSphereViewer.js.
     </p>
@@ -61,116 +75,151 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead>
-        <tr>
-          <th style="width: 130px;">Name</th>
-          <th style="width: 100px;">type</th>
-          <th style="width: 150px;">default</th>
-          <th>description</th>
-        </tr>
+      <tr>
+        <th style="width: 130px;">Name</th>
+        <th style="width: 100px;">type</th>
+        <th style="width: 150px;">default</th>
+        <th>description</th>
+      </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>container</td>
-          <td>HTMLElement</td>
-          <td><span class="label label-danger">required</span></td>
-          <td>HTML element which will contain the panorama.</td>
-        </tr>
-        <tr>
-          <td>panorama</td>
-          <td>String</td>
-          <td><span class="label label-danger">required</span></td>
-          <td>Path to the panorama image.</td>
-        </tr>
-        <tr>
-          <td>autoload</td>
-          <td>boolean</td>
-          <td>true</td>
-          <td>Automatically load the panorama, if <code>false</code> you must use <code>load</code> method later.</td>
-        </tr>
-        <tr>
-          <td>min_fov</td>
-          <td>integer</td>
-          <td>30</td>
-          <td>Minimal field of view (corresponds to max zoom), between 1 and 179.</td>
-        </tr>
-        <tr>
-          <td>max_fov</td>
-          <td>integer</td>
-          <td>90</td>
-          <td>Maximal field of view (corresponds to min zoom), between 1 and 179.</td>
-        </tr>
-        <tr>
-          <td>default_fov</td>
-          <td>integer</td>
-          <td><code>max_fov</code></td>
-          <td>Initial field of view, between <code>min_fov</code> and <code>max_fov</code>.</td>
-        </tr>
-        <tr>
-          <td>default_long</td>
-          <td>double</td>
-          <td>0</td>
-          <td>Initial longitude in radians, between 0 and 2&pi;.</td>
-        </tr>
-        <tr>
-          <td>default_lat</td>
-          <td>double</td>
-          <td>0</td>
-          <td>Initial latitude in radians, between -&pi;/2 and &pi;/2.</td>
-        </tr>
-        <tr>
-          <td>time_anim</td>
-          <td>integer|boolean</td>
-          <td>2000</td>
-          <td>Idle time (milliseconds) before the panorama automatically starts rotating. <code>false</code> to deactivate.</td>
-        </tr>
-        <tr>
-          <td>anim_speed</td>
-          <td>string</td>
-          <td>'2rpm'</td>
-          <td>Automatic rotation speed in radians/degrees/revolutions per second/minute.
-            <button class="btn btn-primary btn-xs" data-bootbox="anim_speed_units">More</button>
-            <div id="anim_speed_units" title="Animation speed units" class="hidden">
-              <p>Different units are possible for the <code>anim_speed</code> parameter :</p>
-              <ul>
-                <li>rpm, revolutions per minute</li>
-                <li>rps, revolutions per second</li>
-                <li>dpm, degrees per minute</li>
-                <li>dps, degrees per second</li>
-                <li>radians per minute</li>
-                <li>radians per second</li>
-              </ul>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>anim_lat</td>
-          <td>double</td>
-          <td><code>default_lat</code></td>
-          <td>Latitude at which the automatic rotation is performed, in radians.</td>
-        </tr>
-        <tr>
-          <td>navbar</td>
-          <td>boolean|object</td>
-          <td>false</td>
-          <td>Enable or disable the navigation bar, you can also choose which buttons are displayed with an <button class="btn btn-primary btn-xs" data-bootbox="navbar_object">hashmap</button>.
-            <div id="navbar_object" title="Navbar buttons" class="hidden">
-              <p>Set <code>navbar</code> to an hashmap of booleans to enable/disable each buttons independently, you can also disable all buttons if you want to display the caption only.</p>
+      <tr>
+        <td>container</td>
+        <td>HTMLElement|string</td>
+        <td><span class="label label-danger">required</span></td>
+        <td>HTML element which will contain the panorama, or identifier of the element.</td>
+      </tr>
+      <tr>
+        <td>panorama</td>
+        <td>String</td>
+        <td><span class="label label-danger">required</span></td>
+        <td>Path to the panorama image.</td>
+      </tr>
+      <tr>
+        <td>markers</td>
+        <td>Array</td>
+        <td>[]</td>
+        <td>List of <a href="{{site.github.url}}/markers.html">markers</a>.</td>
+      </tr>
+      <tr>
+        <td>autoload</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Automatically load the panorama, if <code>false</code> you must use <code>load</code> method later.</td>
+      </tr>
+      <tr>
+        <td>min_fov</td>
+        <td>integer</td>
+        <td>30</td>
+        <td>Minimal field of view (corresponds to max zoom), between 1 and 179.</td>
+      </tr>
+      <tr>
+        <td>max_fov</td>
+        <td>integer</td>
+        <td>90</td>
+        <td>Maximal field of view (corresponds to min zoom), between 1 and 179.</td>
+      </tr>
+      <tr>
+        <td>default_fov</td>
+        <td>integer</td>
+        <td><code>max_fov</code></td>
+        <td>Initial field of view, between <code>min_fov</code> and <code>max_fov</code>.</td>
+      </tr>
+      <tr>
+        <td>default_long</td>
+        <td>double</td>
+        <td>0</td>
+        <td>Initial longitude in radians, between 0 and 2&pi;.</td>
+      </tr>
+      <tr>
+        <td>default_lat</td>
+        <td>double</td>
+        <td>0</td>
+        <td>Initial latitude in radians, between -&pi;/2 and &pi;/2.</td>
+      </tr>
+      <tr>
+        <td>tilt_up_max</td>
+        <td>double</td>
+        <td>&pi;/2</td>
+        <td>Maximum latitude, between -&pi;/2 and &pi;/2.</td>
+      </tr>
+      <tr>
+        <td>tilt_down_max</td>
+        <td>double</td>
+        <td>-&pi;/2</td>
+        <td>Mimimum latitude, between -&pi;/2 and &pi;/2.</td>
+      </tr>
+      <tr>
+        <td>time_anim</td>
+        <td>integer|boolean</td>
+        <td>2000</td>
+        <td>Idle time (milliseconds) before the panorama automatically starts rotating. <code>false</code> to
+          deactivate.
+        </td>
+      </tr>
+      <tr>
+        <td>anim_speed</td>
+        <td>string</td>
+        <td>'2rpm'</td>
+        <td>Automatic rotation speed in radians/degrees/revolutions per second/minute.
+          <button class="btn btn-primary btn-xs" data-bootbox="anim_speed_units">More</button>
+          <div id="anim_speed_units" title="Animation speed units" class="hidden">
+            <p>Different units are possible for the <code>anim_speed</code> parameter :</p>
+            <ul>
+              <li>rpm, revolutions per minute</li>
+              <li>rps, revolutions per second</li>
+              <li>dpm, degrees per minute</li>
+              <li>dps, degrees per second</li>
+              <li>radians per minute</li>
+              <li>radians per second</li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>anim_lat</td>
+        <td>double</td>
+        <td><code>default_lat</code></td>
+        <td>Latitude at which the automatic rotation is performed, in radians.</td>
+      </tr>
+      <tr>
+        <td>caption</td>
+        <td>String</td>
+        <td>null</td>
+        <td>A text (can contain HTML) displayed in the navbar. If the navbar is disabled it will be shown anyway but
+          with no button.
+        </td>
+      </tr>
+      <tr>
+        <td>navbar</td>
+        <td>boolean|object</td>
+        <td>false</td>
+        <td>Enable or disable the navigation bar, you can also choose which buttons are displayed with an
+          <button class="btn btn-primary btn-xs" data-bootbox="navbar_object">hashmap</button>
+          .
+          <div id="navbar_object" title="Navbar buttons" class="hidden">
+            <p>Set <code>navbar</code> to an hashmap of booleans to enable/disable each buttons independently.</p>
+            <!-- @formatter:off -->
 {% highlight javascript %}
 navbar: {
   autorotate: true,
   zoom: true,
   fullscreen: true,
-  download: true
+  download: true,
+  markers: true
 }
 {% endhighlight %}
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>lang</td>
-          <td>object</td>
-          <td><button class="btn btn-primary btn-xs" data-bootbox="navbar_lang">View</button>
-            <div id="navbar_lang" title="Navbar buttons texts" class="hidden">
+<!-- @formatter:on -->
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>lang</td>
+        <td>object</td>
+        <td>
+          <button class="btn btn-primary btn-xs" data-bootbox="navbar_lang">View</button>
+          <div id="navbar_lang" title="Navbar buttons texts" class="hidden">
+            <!-- @formatter:off -->
 {% highlight javascript %}
 lang: {
   autorotate: 'Automatic rotation',
@@ -178,67 +227,67 @@ lang: {
   zoomOut: 'Zoom out',
   zoomIn: 'Zoom in',
   download: 'Download',
-  fullscreen: 'Fullscreen'
+  fullscreen: 'Fullscreen',
+  markers: 'Markers'
 }
 {% endhighlight %}
-            </div>
-          </td>
-          <td>Text of navbar buttons tooltips.</td>
-        </tr>
-        <tr>
-          <td>caption</td>
-          <td>String</td>
-          <td>null</td>
-          <td>A text (can contain HTML) displayed in the navbar, if visible.</td>
-        </tr>
-        <tr>
-          <td>loading_img</td>
-          <td>String</td>
-          <td>null</td>
-          <td>Path to an image displayed in the center of the loading circle.</td>
-        </tr>
-        <tr>
-          <td>loading_txt</td>
-          <td>String</td>
-          <td>'Loading...'</td>
-          <td>Text displayed in the center of the loading circle, only if <code>loading_img</code> is not provided.</td>
-        </tr>
-        <tr>
-          <td>size</td>
-          <td>Object</td>
-          <td>null</td>
-          <td>The final size if the panorama container (e.g. <code>{width: 500, height: 300}</code>. By default the size of <code>container</code> is used and is followed during window resizes.</td>
-        </tr>
-        <tr>
-          <td>mousewheel</td>
-          <td>boolean</td>
-          <td>true</td>
-          <td>Listen to mouse wheel events to zoom in and out.</td>
-        </tr>
-        <tr>
-          <td>mousemove</td>
-          <td>boolean</td>
-          <td>true</td>
-          <td>Listen to mouse click+move events to rotate the view.</td>
-        </tr>
-        <tr>
-          <td>long_offset</td>
-          <td>double</td>
-          <td>&pi;/720</td>
-          <td>Longitude to travel per pixel moved by mouse/touch.</td>
-        </tr>
-        <tr>
-          <td>lat_offset</td>
-          <td>double</td>
-          <td>&pi;/360</td>
-          <td>Latitude to travel per pixel moved by mouse/touch.</td>
-        </tr>
-        <tr>
-          <td>usexmpdata</td>
-          <td>boolean</td>
-          <td>true</td>
-          <td>Read real image size from XMP data, must be kept <code>true</code> if the panorama has been cropped after shot.</td>
-        </tr>
+<!-- @formatter:on -->
+          </div>
+        </td>
+        <td>Text of navbar buttons tooltips.</td>
+      </tr>
+      <tr>
+        <td>loading_img</td>
+        <td>String</td>
+        <td>null</td>
+        <td>Path to an image displayed in the center of the loading circle.</td>
+      </tr>
+      <tr>
+        <td>loading_txt</td>
+        <td>String</td>
+        <td>'Loading...'</td>
+        <td>Text displayed in the center of the loading circle, only if <code>loading_img</code> is not provided.</td>
+      </tr>
+      <tr>
+        <td>size</td>
+        <td>Object</td>
+        <td>null</td>
+        <td>The final size if the panorama container (e.g. <code>{width: 500, height: 300}</code>. By default the size
+          of <code>container</code> is used and is followed during window resizes.
+        </td>
+      </tr>
+      <tr>
+        <td>mousewheel</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Listen to mouse wheel events to zoom in and out.</td>
+      </tr>
+      <tr>
+        <td>mousemove</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Listen to mouse click+move events to rotate the view.</td>
+      </tr>
+      <tr>
+        <td>long_offset</td>
+        <td>double</td>
+        <td>&pi;/1440</td>
+        <td>Longitude to travel per pixel moved by mouse/touch.</td>
+      </tr>
+      <tr>
+        <td>lat_offset</td>
+        <td>double</td>
+        <td>&pi;/720</td>
+        <td>Latitude to travel per pixel moved by mouse/touch.</td>
+      </tr>
+      <tr>
+        <td>usexmpdata</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Read real image size from XMP data, must be kept <code>true</code> if the panorama has been cropped after
+          shot.
+        </td>
+      </tr>
       </tbody>
     </table>
   </div>
@@ -248,96 +297,263 @@ lang: {
 
   <p>The <code>PhotoSphereViewer</code> function returns an object with the following methods:</p>
 
-  <h4>load</h4>
+  <h4><code>.destroy()</code></h4>
+
+  <p>Destroy the viewer.</p>
+
+  <div class="bs-callout bs-callout-danger">
+    <p>The memory used by the ThreeJS context is not totally cleared. This will be fixed as soon as possible.</p>
+  </div>
+
+  <h4><code>.load()</code></h4>
+
   <p>Inits panorama loading if <code>autoload</code> was false.</p>
 
-  <h4>rotate</h4>
+  <h4><code>.render()</code></h4>
+
+  <p>Performs a full render of the viewer, usefull if you manually modified some properties or update markers.</p>
+
+  <h4><code>.rotate(longitude, latitude)</code></h4>
+
   <p>Rotates the view to specific longitude and latitude.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.rotate(Math.PI, - Math.PI / 4);
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>resize</h4>
+  <h4><code>.animate(longitude, latitude, duration | speed)</code></h4>
+
+  <p>Rotates the view to specific longitude and latitude with a smooth animation. The last param can be a duration in
+    milliseconds or a speed with the same format as <code>anim_speed</code> parameter.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.animate(Math.PI, - Math.PI / 4, 2000);
+{% endhighlight %}
+<!-- @formatter:on -->
+  <h4><code>.resize(width, height)</code></h4>
+
   <p>Resizes the viewer to a specific size in pixels, it will disable the responsiveness.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.resize(600, 400);
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>zoom</h4>
-  <p>Zooms to a specific level between <code>0</code> (max_fov) and <code>100</code> (min_fov).</p>
+  <h4><code>.zoom(level)</code></h4>
+
+  <p>Zooms to a specific level between <code>max_fov</code> (default: 0) and <code>min_fov</code> (default: 100).</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.zoom(45);
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>zoomIn / zoomOut</h4>
-  <p>Increases or decreases to soom level by <code>1</code>.</p>
+  <h4><code>.zoomIn()</code> / <code>.zoomOut()</code></h4>
 
-  <h4>toggleFullscreen</h4>
+  <p>Increases or decreases to zoom level by <code>1</code>.</p>
+
+  <h4><code>.toggleFullscreen()</code></h4>
+
   <p>Enters or exits the fullscreen mode.</p>
 
-  <h4>startAutorotate / stopAutorotate / toggleAutorotate</h4>
+  <h4><code>.startAutorotate()</code> / <code>.stopAutorotate()</code> / <code>.toggleAutorotate()</code></h4>
+
   <p>Enables or disables the automatic rotation.</p>
 
-  <h4>setAnimSpeed</h4>
-  <p>Changes the automatic rotation speed, same format as <code>anim_speed</code> parameter.</p>
+  <h4><code>.setAnimSpeed(speed)</code></h4>
 
+  <p>Changes the automatic rotation speed, same format as <code>anim_speed</code> parameter.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.setAnimSpeed('180dpm');
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.showPanel(content [, noMargin])</code> / <code>.hidePanel()</code></h4>
+
+  <p>Opens the right panel with the specified HTML content.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.showPanel(html);
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>.showTooltip(config)</code> / <code>.hideTooltip()</code></h4>
+
+  <p>Displays a tooltip on the viewer.</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th style="width: 130px;">Name</th>
+        <th style="width: 100px;">type</th>
+        <th style="width: 150px;">default</th>
+        <th>description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>content</td>
+        <td>string</td>
+        <td><span class="label label-danger">required</span></td>
+        <td>HTML content of the tootlip</td>
+      </tr>
+      <tr>
+        <td>top & left</td>
+        <td>int</td>
+        <td><span class="label label-danger">required</span></td>
+        <td>Position of the tip of the arrow of the tooltip, in pixels.</td>
+      </tr>
+      <tr>
+        <td>position</td>
+        <td>string</td>
+        <td>'top center'</td>
+        <td>Tooltip position toward it's arrow tip. Accepted values are combinations of <code>top, center, bottom</code>
+          and
+          <code>left, center, right</code> with the exception of <code>center center</code>.
+        </td>
+      </tr>
+      <tr>
+        <td>className</td>
+        <td>string</td>
+        <td></td>
+        <td>Additional CSS class added to the tooltip.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 
   <h2 id="events">Events</h2>
 
   <p>On the same viewer object you can use the <code>on</code> method to listen to various events.</p>
 
-  <h4>ready</h4>
+  <h4><code>ready</code></h4>
+
   <p>Triggered when the panorama image has been loaded and the viewer is ready to perform the first render.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.on('ready', function() {
   // do something when the viewer is ready to render
 });
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>autorotate</h4>
+  <h4><code>render</code></h4>
+
+  <p>Triggered on each viewer render <b>which happens A LOT when rotating, zooming, etc.</b></p>
+
+  <h4><code>click [data]</code></h4>
+
+  <p>Triggered when the user click on the viewer on a "free space" (everywhere excluding the navbar, the side panel or
+    an existing marker). The <code>data</code> contains info about the clicked point:</p>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th style="width: 250px;">Name</th>
+        <th>description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>client_x & client_y</td>
+        <td>Position in pixels from the top-left corner of the viewer.</td>
+      </tr>
+      <tr>
+        <td>latitude & longitude</td>
+        <td>Corresponding spherical coordinates in radians.</td>
+      </tr>
+      <tr>
+        <td>texture_x & texture_y</td>
+        <td>Corresponding position on the panorama image in pixels.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4><code>autorotate [enabled]</code></h4>
+
   <p>Triggered when the automatic rotation is enabled/disabled.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.on('autorotate', function(enabled) {
   // enabled is true or false
 });
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>zoom-updated</h4>
+  <h4><code>zoom-updated [level]</code></h4>
+
   <p>Triggered when the zoom level changes.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.on('zoom-updated', function(level) {
   // level is from 0 to 100
 });
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>fullscreen-updated</h4>
+  <h4><code>fullscreen-updated [enabled]</code></h4>
+
   <p>Triggered when the fullscreen mode is enabled or disabled.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.on('fullscreen-updated', function(enabled) {
   // enabled is true or false
 });
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>position-updated</h4>
-  <p>Triggered when the view longitude and/or latitude change.</p>
+  <h4><code>position-updated [longitude, latitude]</code></h4>
+
+  <p>Triggered when the view longitude and/or latitude changes.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.on('position-updated', function(long, lat) {
   // long and lat are doubles
 });
 {% endhighlight %}
+<!-- @formatter:on -->
 
-  <h4>size-updated</h4>
+  <h4><code>size-updated [width, height]</code></h4>
+
   <p>Triggered when the viewer size changes.</p>
+  <!-- @formatter:off -->
 {% highlight javascript %}
 viewer.on('size-updated', function(width, height) {
   // width and height are in pixels
 });
 {% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>open-panel</code> / <code>close-panel</code></h4>
+
+  <h4><code>show-tooltip</code> / <code>hide-tooltip</code></h4>
 </section>
 
 
 <style>
-.bs-docs-masthead .version { color:inherit; }
+  .bs-docs-masthead .version {
+    color: inherit;
+  }
+  .markers-announce {
+    position: absolute;
+    display: block;
+    bottom: 0;
+    right: 0;
+    width: calc(30% - 80px);
+    min-width: 220px;
+    height: 40px;
+    z-index: 100;
+    text-align: left;
+    font-size: 20px;
+    line-height: 40px;
+    color: {{site.header.color1}};
+    text-shadow: 1px 1px 0 {{site.header.color2}};
+  }
 </style>
 
 <link rel="stylesheet" href="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
@@ -349,10 +565,12 @@ viewer.on('size-updated', function(width, height) {
 <script>
   var PSV = new PhotoSphereViewer({
     panorama: '{{site.github.url}}/assets/Bryce-Canyon-National-Park-Mark-Doliner.jpg',
-    container: document.getElementById('photosphere'),
-    navbar: true,
+    container: 'photosphere',
+    loading_img: '{{site.github.url}}/assets/photosphere-logo.gif',
+    navbar: 'autorotate zoom download fullscreen',
     caption: 'Bryce Canyon National Park <b>&copy; Mark Doliner</b>',
     default_fov: 70,
+    mousewheel: false,
     size: {
       height: 500
     }

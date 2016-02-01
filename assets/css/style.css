@@ -28,5 +28,6 @@
   right:0px;
   height:50px;
   width:30%;
+  min-width: 300px;
   background:linear-gradient(135deg, transparent 50px, white 50px);
 }
