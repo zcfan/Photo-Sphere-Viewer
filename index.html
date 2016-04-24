@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Home
-description: A JavaScript library to display Photo Sphere panoramas<a href="http://photo-sphere-viewer.js.org/markers.html" class="markers-announce">📌 Now with markers! </a>
+description: A JavaScript library to display Photo Sphere panoramas
 isHome: true
 ---
 
@@ -21,24 +21,34 @@ isHome: true
     <h4>Thanks to <a href="https://github.com/JeremyHeleine">@JeremyHeleine</a></h4>
 
     <p>I forked the original <a href="http://jeremyheleine.me/#photo-sphere-viewer">Photo Sphere Viewer by Jérémy
-      Heleine</a> to provide a (IMHO) better JS architecture, separated stylesheet and new options I needed for <a
-      href="http://piwigo.org/ext/extension_view.php?eid=794">PhotoSphere for Piwigo</a>.</p>
+      Heleine</a> to provide a better JS architecture and a bunch of new features.</p>
   </div>
 
   <div id="photosphere"></div>
 </section>
 
 <section class="bs-docs-section">
-  <h1 id="usage" class="page-header">Usage</h1>
+  <h1 id="installation" class="page-header">Installation</h1>
 
-  <h2 id="installation">Installation</h2>
+  <h3>Dependencies</h3>
+  <ul>
+    <li><a href="http://threejs.org">three.js</a></li>
+    <li><a href="http://olado.github.io/doT">doT.js</a> (@master)</li>
+    <li><a href="https://github.com/mistic100/uEvent">uEvent</a></li>
+    <li><a href="http://malko.github.io/D.js">D.js</a></li>
+  </ul>
 
-  <p>The only dependency of PSV is Three.js. You just have to include PSV CSS and JS in your page and you are ready.</p>
+  <h3>Markup</h3>
+
+  <p>Include all JS &amp; CSS files in your page and you are ready.</p>
   <!-- @formatter:off -->
 {% highlight html %}
 <link rel="stylesheet" href="Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
 
 <script src="three.js/three.min.js"></script>
+<script src="D.js/lib/D.min.js"></script>
+<script src="uevent/uevent.min.js"></script>
+<script src="doT/doT.min.js"></script>
 <script src="Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
 
 <script>
@@ -57,17 +67,63 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
 <!-- @formatter:on -->
 
   <div class="bs-callout bs-callout-danger">
-    <h4>Three.js files</h4>
+    <h4>Canvas rendering</h4>
 
-    <p>In order to get Photo Sphere Viewer working on browsers without WebGL (Internet Explorer and older versions of
-      other browsers),
-      you will need to additional files from Three.js examples:
-      <a
-        href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/CanvasRenderer.js">CanvasRenderer.js</a>
-      and
-      <a href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/Projector.js">Project.js</a>.<br>
-      Include them after Three.js and before PhotoSphereViewer.js.
-    </p>
+    <p>In order to get Photo Sphere Viewer working on browsers without WebGL you will need some additional files from
+      Three.js examples (also available in <code>threejs-examples</code> Bower package) :</p>
+    <ul>
+      <!-- @formatter:off -->
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/CanvasRenderer.js">CanvasRenderer.js</a></li>
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/Projector.js">Projector.js</a></li>
+      <!-- @formatter:on -->
+    </ul>
+  </div>
+
+  <div class="bs-callout bs-callout-warning">
+    <h4>Transition effect</h4>
+
+    <p>In order to perform the transition effect between two panoramas (<code>transition.blur</code> option), Photo
+      Sphere Viewer requires the following files from Three.js examples (also available in <code>threejs-examples</code>
+      Bower package) :</p>
+    <ul>
+      <!-- @formatter:off -->
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/EffectComposer.js">EffectComposer.js</a></li>
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/RenderPass.js">RenderPass.js</a></li>
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/ShaderPass.js">ShaderPass.js</a></li>
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/postprocessing/MaskPass.js">MaskPass.js</a></li>
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/shaders/CopyShader.js">CopyShader.js</a></li>
+      <!-- @formatter:on -->
+    </ul>
+  </div>
+
+  <div class="bs-callout bs-callout-warning">
+    <h4>Gyroscope support</h4>
+
+    <p>In order to be able to respond to device gyroscope (<code>gyroscope</code> option), Photo Sphere Viewer requires
+      the following files from Three.js examples (also available in <code>threejs-examples</code> Bower package) :</p>
+    <ul>
+      <!-- @formatter:off -->
+      <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js">DeviceOrientationControls.js</a></li>
+      <!-- @formatter:on -->
+    </ul>
+  </div>
+</section>
+
+
+<section class="bs-docs-section">
+  <h1 id="usage" class="page-header">Usage</h1>
+
+  <div class="alert alert-info">
+    <b>Angles definition</b>
+    <p>Photo Sphere Viewer uses a lot of angles for it's configuration, most of them can be defined in radians by using
+      a simple number (<code>3.5</code>) or in degrees using the "deg" prefix (<code>'55deg'</code>)</a>.</p>
+  </div>
+
+  <div class="alert alert-info">
+    <b>Positions definition</b>
+    <p>Some methods take a <code>position</code> parameter. It is an object with either <code>longitude</code> and
+      <code>latitude</code> properties (radians or degrees) or <code>x</code> and <code>y</code> properies
+      (corresponding to the pixel position on the source panorama file).</p>
   </div>
 
   <h2 id="options">Options</h2>
@@ -94,6 +150,14 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
         <td>String</td>
         <td><span class="label label-danger">required</span></td>
         <td>Path to the panorama image.</td>
+      </tr>
+      <tr>
+        <td>caption</td>
+        <td>String</td>
+        <td>null</td>
+        <td>A text (can contain HTML) displayed in the navbar. If the navbar is disabled it will be shown anyway but
+          with no button.
+        </td>
       </tr>
       <tr>
         <td>markers</td>
@@ -129,25 +193,27 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
         <td>default_long</td>
         <td>double</td>
         <td>0</td>
-        <td>Initial longitude in radians, between 0 and 2&pi;.</td>
+        <td>Initial longitude, between 0 and 2&pi;.</td>
       </tr>
       <tr>
         <td>default_lat</td>
         <td>double</td>
         <td>0</td>
-        <td>Initial latitude in radians, between -&pi;/2 and &pi;/2.</td>
+        <td>Initial latitude, between -&pi;/2 and &pi;/2.</td>
       </tr>
       <tr>
-        <td>tilt_up_max</td>
-        <td>double</td>
-        <td>&pi;/2</td>
-        <td>Maximum latitude, between -&pi;/2 and &pi;/2.</td>
+        <td>longitude_range</td>
+        <td>double[]</td>
+        <td></td>
+        <td>Viewable longitude range. Examples:<br>
+          <code>[0, Math.PI]</code>, <code>[-3*Math.PI/4, 3*Math.PI/4]</code>.
+        </td>
       </tr>
       <tr>
-        <td>tilt_down_max</td>
-        <td>double</td>
-        <td>-&pi;/2</td>
-        <td>Mimimum latitude, between -&pi;/2 and &pi;/2.</td>
+        <td>latitude_range</td>
+        <td>double[]</td>
+        <td>[&pi;/2, -&pi;/2]</td>
+        <td>Viewable latitude range.</td>
       </tr>
       <tr>
         <td>time_anim</td>
@@ -166,12 +232,12 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
           <div id="anim_speed_units" title="Animation speed units" class="hidden">
             <p>Different units are possible for the <code>anim_speed</code> parameter :</p>
             <ul>
-              <li>rpm, revolutions per minute</li>
-              <li>rps, revolutions per second</li>
-              <li>dpm, degrees per minute</li>
-              <li>dps, degrees per second</li>
-              <li>radians per minute</li>
-              <li>radians per second</li>
+              <li><code>rpm</code> revolutions per minute</li>
+              <li><code>rps</code> revolutions per second</li>
+              <li><code>dpm</code> degrees per minute</li>
+              <li><code>dps</code> degrees per second</li>
+              <li><code>radians per minute</code></li>
+              <li><code>radians per second</code></li>
             </ul>
           </div>
         </td>
@@ -180,55 +246,33 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
         <td>anim_lat</td>
         <td>double</td>
         <td><code>default_lat</code></td>
-        <td>Latitude at which the automatic rotation is performed, in radians.</td>
-      </tr>
-      <tr>
-        <td>caption</td>
-        <td>String</td>
-        <td>null</td>
-        <td>A text (can contain HTML) displayed in the navbar. If the navbar is disabled it will be shown anyway but
-          with no button.
-        </td>
+        <td>Latitude at which the automatic rotation is performed.</td>
       </tr>
       <tr>
         <td>navbar</td>
-        <td>boolean|object</td>
-        <td>false</td>
-        <td>Enable or disable the navigation bar, you can also choose which buttons are displayed with an
-          <button class="btn btn-primary btn-xs" data-bootbox="navbar_object">hashmap</button>
-          .
-          <div id="navbar_object" title="Navbar buttons" class="hidden">
-            <p>Set <code>navbar</code> to an hashmap of booleans to enable/disable each buttons independently.</p>
-            <!-- @formatter:off -->
-{% highlight javascript %}
-navbar: {
-  autorotate: true,
-  zoom: true,
-  fullscreen: true,
-  download: true,
-  markers: true
-}
-{% endhighlight %}
-<!-- @formatter:on -->
-          </div>
+        <td>boolean|array</td>
+        <td></td>
+        <td>Enable or disable the navigation bar, you can also choose which buttons are displayed and even add custom
+          buttons. <a href="#navbar"><i class="glyphicon glyphicon-info-sign"></i> See below</a>.
         </td>
       </tr>
       <tr>
         <td>lang</td>
-        <td>object</td>
+        <td>Object</td>
         <td>
-          <button class="btn btn-primary btn-xs" data-bootbox="navbar_lang">View</button>
-          <div id="navbar_lang" title="Navbar buttons texts" class="hidden">
+          <button class="btn btn-primary btn-xs" data-bootbox="lang-config">View</button>
+          <div id="lang-config" title="Navbar buttons texts" class="hidden">
             <!-- @formatter:off -->
 {% highlight javascript %}
 lang: {
-  autorotate: 'Automatic rotation',
-  zoom: 'Zoom',
-  zoomOut: 'Zoom out',
-  zoomIn: 'Zoom in',
-  download: 'Download',
-  fullscreen: 'Fullscreen',
-  markers: 'Markers'
+    autorotate: 'Automatic rotation',
+    zoom: 'Zoom',
+    zoomOut: 'Zoom out',
+    zoomIn: 'Zoom in',
+    download: 'Download',
+    fullscreen: 'Fullscreen',
+    markers: 'Markers',
+    gyroscope: 'Gyroscope'
 }
 {% endhighlight %}
 <!-- @formatter:on -->
@@ -249,14 +293,6 @@ lang: {
         <td>Text displayed in the center of the loading circle, only if <code>loading_img</code> is not provided.</td>
       </tr>
       <tr>
-        <td>size</td>
-        <td>Object</td>
-        <td>null</td>
-        <td>The final size if the panorama container (e.g. <code>{width: 500, height: 300}</code>. By default the size
-          of <code>container</code> is used and is followed during window resizes.
-        </td>
-      </tr>
-      <tr>
         <td>mousewheel</td>
         <td>boolean</td>
         <td>true</td>
@@ -269,16 +305,74 @@ lang: {
         <td>Listen to mouse click+move events to rotate the view.</td>
       </tr>
       <tr>
-        <td>long_offset</td>
-        <td>double</td>
-        <td>&pi;/1440</td>
-        <td>Longitude to travel per pixel moved by mouse/touch.</td>
+        <td>keyboard</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Enabled keyboard navigation in fullscreen.</td>
       </tr>
       <tr>
-        <td>lat_offset</td>
+        <td>gyroscope</td>
+        <td>boolean</td>
+        <td>false</td>
+        <td>Enable gyroscope navigation and add a navbar button when the device supports it.</td>
+      </tr>
+      <tr>
+        <td>size</td>
+        <td>Object</td>
+        <td>null</td>
+        <td>The final size if the panorama container (e.g. <code>{width: 500, height: 300}</code>. By default the size
+          of <code>container</code> is used and is followed during window resizes.
+        </td>
+      </tr>
+      <tr>
+        <td>transition</td>
+        <td>Object</td>
+        <td>
+          <button class="btn btn-primary btn-xs" data-bootbox="transition-config">View</button>
+          <div id="transition-config" title="Tooltip config" class="hidden">
+            <!-- @formatter:off -->
+{% highlight javascript %}
+transition: {
+    duration: 1500,
+    loader: true,
+    blur: false
+}
+{% endhighlight %}
+<!-- @formatter:on -->
+          </div>
+        </td>
+        <td>Configuration of the transition effect between panoramas.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Advanced options</h3>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th style="width: 130px;">Name</th>
+        <th style="width: 100px;">type</th>
+        <th style="width: 150px;">default</th>
+        <th>description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>move_speed</td>
         <td>double</td>
-        <td>&pi;/720</td>
-        <td>Latitude to travel per pixel moved by mouse/touch.</td>
+        <td>1</td>
+        <td>Speed multiplicator for manual moves.</td>
+      </tr>
+      <tr>
+        <td>sphere_segments</td>
+        <td>integer (multiple of 2)</td>
+        <td>64</td>
+        <td>Number of horizontal and vertical segments used to render the sphere, decrease if you encounter performance
+          issues.
+        </td>
       </tr>
       <tr>
         <td>usexmpdata</td>
@@ -287,6 +381,37 @@ lang: {
         <td>Read real image size from XMP data, must be kept <code>true</code> if the panorama has been cropped after
           shot.
         </td>
+      </tr>
+      <tr>
+        <td>tooltip</td>
+        <td>object</td>
+        <td>
+          <button class="btn btn-primary btn-xs" data-bootbox="tooltip-config">View</button>
+          <div id="tooltip-config" title="Tooltip config" class="hidden">
+            <!-- @formatter:off -->
+{% highlight javascript %}
+tooltip: {
+    offset: 5,
+    arrow_size: 7,
+    delay: 100
+}
+{% endhighlight %}
+<!-- @formatter:on -->
+          </div>
+        </td>
+        <td>Configuration of the tooltip. This only needs to be changes of the CSS is modified.</td>
+      </tr>
+      <tr>
+        <td>move_inertia</td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Enabled smooth animation after a manual move.</td>
+      </tr>
+      <tr>
+        <td>click_event_on_marker</td>
+        <td>boolean</td>
+        <td>false</td>
+        <td>A click on a marker will trigger a <code>click</code> event as well as <code>select-marker</code>.</td>
       </tr>
       </tbody>
     </table>
@@ -297,51 +422,60 @@ lang: {
 
   <p>The <code>PhotoSphereViewer</code> function returns an object with the following methods:</p>
 
+  <h3>Actions</h3>
+
   <h4><code>.destroy()</code></h4>
-
   <p>Destroy the viewer.</p>
-
   <div class="bs-callout bs-callout-danger">
     <p>The memory used by the ThreeJS context is not totally cleared. This will be fixed as soon as possible.</p>
   </div>
 
   <h4><code>.load()</code></h4>
-
   <p>Inits panorama loading if <code>autoload</code> was false.</p>
 
   <h4><code>.render()</code></h4>
+  <p>Performs a full render of the viewer, useful if you manually modified some properties or updated the markers.</p>
 
-  <p>Performs a full render of the viewer, usefull if you manually modified some properties or update markers.</p>
-
-  <h4><code>.rotate(longitude, latitude)</code></h4>
-
-  <p>Rotates the view to specific longitude and latitude.</p>
+  <h4><code>.setPanorama(path [, position] [, transition]</code></h4>
+  <p>Loads a new panorama image, optionnally changing the camera position and activating or not the transition
+    animation.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
-viewer.rotate(Math.PI, - Math.PI / 4);
+viewer.setPanorama(
+  'panorama-2.jpg',
+  {
+    longitude: Math.PI,
+    latitude: 0
+  },
+  true
+);
 {% endhighlight %}
 <!-- @formatter:on -->
 
-  <h4><code>.animate(longitude, latitude, duration | speed)</code></h4>
+  <h4><code>.rotate(position [, render])</code></h4>
+  <p>Rotates the view to specific longitude and latitude. By default this triggers and render.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.rotate({
+  longitude: Math.PI,
+  latitude: - Math.PI / 4
+});
+{% endhighlight %}
+<!-- @formatter:on -->
 
+  <h4><code>.animate(position, duration | speed)</code></h4>
   <p>Rotates the view to specific longitude and latitude with a smooth animation. The last param can be a duration in
     milliseconds or a speed with the same format as <code>anim_speed</code> parameter.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
-viewer.animate(Math.PI, - Math.PI / 4, 2000);
-{% endhighlight %}
-<!-- @formatter:on -->
-  <h4><code>.resize(width, height)</code></h4>
-
-  <p>Resizes the viewer to a specific size in pixels, it will disable the responsiveness.</p>
-  <!-- @formatter:off -->
-{% highlight javascript %}
-viewer.resize(600, 400);
+viewer.animate({
+  x: 1200,
+  y: 500
+}, 2000);
 {% endhighlight %}
 <!-- @formatter:on -->
 
   <h4><code>.zoom(level)</code></h4>
-
   <p>Zooms to a specific level between <code>max_fov</code> (default: 0) and <code>min_fov</code> (default: 100).</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
@@ -350,28 +484,9 @@ viewer.zoom(45);
 <!-- @formatter:on -->
 
   <h4><code>.zoomIn()</code> / <code>.zoomOut()</code></h4>
-
   <p>Increases or decreases to zoom level by <code>1</code>.</p>
 
-  <h4><code>.toggleFullscreen()</code></h4>
-
-  <p>Enters or exits the fullscreen mode.</p>
-
-  <h4><code>.startAutorotate()</code> / <code>.stopAutorotate()</code> / <code>.toggleAutorotate()</code></h4>
-
-  <p>Enables or disables the automatic rotation.</p>
-
-  <h4><code>.setAnimSpeed(speed)</code></h4>
-
-  <p>Changes the automatic rotation speed, same format as <code>anim_speed</code> parameter.</p>
-  <!-- @formatter:off -->
-{% highlight javascript %}
-viewer.setAnimSpeed('180dpm');
-{% endhighlight %}
-<!-- @formatter:on -->
-
   <h4><code>.showPanel(content [, noMargin])</code> / <code>.hidePanel()</code></h4>
-
   <p>Opens the right panel with the specified HTML content.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
@@ -380,9 +495,7 @@ viewer.showPanel(html);
 <!-- @formatter:on -->
 
   <h4><code>.showTooltip(config)</code> / <code>.hideTooltip()</code></h4>
-
   <p>Displays a tooltip on the viewer.</p>
-
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead>
@@ -425,12 +538,48 @@ viewer.showPanel(html);
     </table>
   </div>
 
+  <h4><code>.toggleFullscreen()</code></h4>
+  <p>Enters or exits the fullscreen mode.</p>
+
+  <h4><code>.startAutorotate()</code> / <code>.stopAutorotate()</code> / <code>.toggleAutorotate()</code></h4>
+  <p>Enables or disables the automatic rotation.</p>
+
+  <h4><code>.startGyroscopeControl()</code> / <code>.stopGyroscopeControl()</code> /
+    <code>.toggleGyroscopeControl()</code></h4>
+  <p>Enables or disables the gyroscope navigation.</p>
+
+  <h4><code>.startKeyboardControl()</code> / <code>.stopKeyboardControl()</code></h4>
+  <p>Enables or disables the keyboard controls (done automatically when entering fullscreen).</p>
+
+  <h4><code>.hideNavbar()</code> / <code>.showNavbar()</code> / <code>.toggleNavbar()</code></h4>
+  <p>Hides or show the navbar.</p>
+
+  <h3>Getters &amp; setters</h3>
+
+  <h4><code>.setCaption(html)</code></h4>
+  <p>Changes the content of the navbar caption.</p>
+
+  <h4><code>.getNavbarButton(id)</code></h4>
+  <p>Returns an existing navbar button by its identifier. <a href="#navbar"><i
+    class="glyphicon glyphicon-info-sign"></i> See below</a>.</p>
+
+  <h4><code>.getPosition()</code></h4>
+
+  <h4><code>.getZoomLevel()</code></h4>
+
+  <h4><code>.getSize()</code></h4>
+
+  <h4><code>.isAutorotateEnabled()</code></h4>
+
+  <h4><code>.isGyroscopeEnabled()</code></h4>
+
+  <h4><code>.isFullscreenEnabled()</code></h4>
+
   <h2 id="events">Events</h2>
 
   <p>On the same viewer object you can use the <code>on</code> method to listen to various events.</p>
 
   <h4><code>ready</code></h4>
-
   <p>Triggered when the panorama image has been loaded and the viewer is ready to perform the first render.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
@@ -441,13 +590,109 @@ viewer.on('ready', function() {
 <!-- @formatter:on -->
 
   <h4><code>render</code></h4>
-
   <p>Triggered on each viewer render <b>which happens A LOT when rotating, zooming, etc.</b></p>
 
   <h4><code>click [data]</code></h4>
-
   <p>Triggered when the user click on the viewer on a "free space" (everywhere excluding the navbar, the side panel or
-    an existing marker). The <code>data</code> contains info about the clicked point:</p>
+    an existing marker). The <code>data</code> contains info about the clicked point :</p>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th style="width: 250px;">Name</th>
+        <th>description</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>target</td>
+        <td>Original target of the click event.</td>
+      </tr>
+      <tr>
+        <td>client_x &amp; client_y</td>
+        <td>Position in pixels from the top-left corner of the viewer.</td>
+      </tr>
+      <tr>
+        <td>latitude &amp; longitude</td>
+        <td>Corresponding spherical coordinates in radians.</td>
+      </tr>
+      <tr>
+        <td>texture_x &amp; texture_y</td>
+        <td>Corresponding position on the panorama image in pixels.</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4><code>autorotate [enabled]</code></h4>
+  <p>Triggered when the automatic rotation is enabled/disabled.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('autorotate', function(enabled) {
+  // enabled is true or false
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>zoom-updated [level]</code></h4>
+  <p>Triggered when the zoom level changes.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('zoom-updated', function(level) {
+  // level is from 0 to 100
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>fullscreen-updated [enabled]</code></h4>
+  <p>Triggered when the fullscreen mode is enabled or disabled.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('fullscreen-updated', function(enabled) {
+  // enabled is true or false
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>gyroscope-updated [enabled]</code></h4>
+  <p>Triggered when the gyroscope mode is enabled or disabled.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('gyroscope-updated', function(enabled) {
+  // enabled is true or false
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>position-updated [position]</code></h4>
+  <p>Triggered when the view longitude and/or latitude changes.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('position-updated', function(position) {
+  // position has longitude and latitude
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>size-updated [size]</code></h4>
+  <p>Triggered when the viewer size changes.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('size-updated', function(size) {
+  // size has width and height
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>open-panel</code> / <code>close-panel</code></h4>
+
+  <h4><code>show-tooltip</code> / <code>hide-tooltip</code></h4>
+
+  <h2 id="navbar">Navbar customization</h2>
+
+  <p><code>navbar</code> is an array which can contain the following core buttons: <code>autorotate</code>,
+    <code>zoom</code>, <code>download</code>, <code>markers</code>, <code>gyroscope</code>, <code>fullscreen</code>, as
+    well as <code>caption</code> and objects to create custom buttons :</p>
 
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
@@ -459,79 +704,68 @@ viewer.on('ready', function() {
       </thead>
       <tbody>
       <tr>
-        <td>client_x & client_y</td>
-        <td>Position in pixels from the top-left corner of the viewer.</td>
+        <td>id</td>
+        <td>The unique identifier of the button.</td>
       </tr>
       <tr>
-        <td>latitude & longitude</td>
-        <td>Corresponding spherical coordinates in radians.</td>
+        <td>title</td>
+        <td>The button tooltip.</td>
       </tr>
       <tr>
-        <td>texture_x & texture_y</td>
-        <td>Corresponding position on the panorama image in pixels.</td>
+        <td>className</td>
+        <td>A CSS class added to the button element.</td>
+      </tr>
+      <tr>
+        <td>onClick</td>
+        <td>Function called when the button is clicked.</td>
+      </tr>
+      <tr>
+        <td>disabled</td>
+        <td>If the button must be disabled by default.</td>
+      </tr>
+      <tr>
+        <td>hidden</td>
+        <td>If the button must be hidden by default.</td>
       </tr>
       </tbody>
     </table>
   </div>
 
-  <h4><code>autorotate [enabled]</code></h4>
-
-  <p>Triggered when the automatic rotation is enabled/disabled.</p>
+  <p>This example uses some core buttons and a custom one.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
-viewer.on('autorotate', function(enabled) {
-  // enabled is true or false
-});
+new PhotoSphereViewer({
+  /* ..... */,
+  navbar: [
+    'autorotate',
+    'zoom',
+    'markers',
+    {
+      id: 'my-button',
+      title: 'Hello world',
+      className: 'custom-button',
+      content: 'Custom',
+      onClick: function() {
+       alert('Hello from custom button');
+      }
+    },
+    'caption',
+    'fullscreen'
+  }
+);
 {% endhighlight %}
 <!-- @formatter:on -->
 
-  <h4><code>zoom-updated [level]</code></h4>
+  <h4>Altering the buttons</h4>
 
-  <p>Triggered when the zoom level changes.</p>
+  <p>After the viewer creation you cannot add or remove buttons but you can change their visibility. Use the <code>getNavbarButton(id)</code>
+    method the get a button by its id (works for core buttons too). You will get an object with the following methods:
+    <code>disable()</code>, <code>enable()</code>, <code>hide()</code>, <code>show()</code>.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
-viewer.on('zoom-updated', function(level) {
-  // level is from 0 to 100
-});
+viewer.getNavbarButton('my-button').hide();
 {% endhighlight %}
 <!-- @formatter:on -->
-
-  <h4><code>fullscreen-updated [enabled]</code></h4>
-
-  <p>Triggered when the fullscreen mode is enabled or disabled.</p>
-  <!-- @formatter:off -->
-{% highlight javascript %}
-viewer.on('fullscreen-updated', function(enabled) {
-  // enabled is true or false
-});
-{% endhighlight %}
-<!-- @formatter:on -->
-
-  <h4><code>position-updated [longitude, latitude]</code></h4>
-
-  <p>Triggered when the view longitude and/or latitude changes.</p>
-  <!-- @formatter:off -->
-{% highlight javascript %}
-viewer.on('position-updated', function(long, lat) {
-  // long and lat are doubles
-});
-{% endhighlight %}
-<!-- @formatter:on -->
-
-  <h4><code>size-updated [width, height]</code></h4>
-
-  <p>Triggered when the viewer size changes.</p>
-  <!-- @formatter:off -->
-{% highlight javascript %}
-viewer.on('size-updated', function(width, height) {
-  // width and height are in pixels
-});
-{% endhighlight %}
-<!-- @formatter:on -->
-
-  <h4><code>open-panel</code> / <code>close-panel</code></h4>
-
-  <h4><code>show-tooltip</code> / <code>hide-tooltip</code></h4>
 </section>
 
 
@@ -539,36 +773,24 @@ viewer.on('size-updated', function(width, height) {
   .bs-docs-masthead .version {
     color: inherit;
   }
-  .markers-announce {
-    position: absolute;
-    display: block;
-    bottom: 0;
-    right: 0;
-    width: calc(30% - 80px);
-    min-width: 220px;
-    height: 40px;
-    z-index: 100;
-    text-align: left;
-    font-size: 20px;
-    line-height: 40px;
-    color: {{site.header.color1}};
-    text-shadow: 1px 1px 0 {{site.header.color2}};
-  }
 </style>
 
 <link rel="stylesheet" href="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.css">
 <script src="{{site.github.url}}/dist/three.js/three.min.js"></script>
-<script src="{{site.github.url}}/dist/three.js/CanvasRenderer.js"></script>
-<script src="{{site.github.url}}/dist/three.js/Projector.js"></script>
+<script src="{{site.github.url}}/dist/D.js/lib/D.min.js"></script>
+<script src="{{site.github.url}}/dist/doT/doT.min.js"></script>
+<script src="{{site.github.url}}/dist/uevent/uevent.min.js"></script>
+<script src="{{site.github.url}}/dist/threejs-examples/examples/js/renderers/CanvasRenderer.js"></script>
+<script src="{{site.github.url}}/dist/threejs-examples/examples/js/renderers/Projector.js"></script>
 <script src="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
 
 <script>
   var PSV = new PhotoSphereViewer({
     panorama: '{{site.github.url}}/assets/Bryce-Canyon-National-Park-Mark-Doliner.jpg',
     container: 'photosphere',
-    loading_img: '{{site.github.url}}/assets/photosphere-logo.gif',
-    navbar: 'autorotate zoom download fullscreen',
     caption: 'Bryce Canyon National Park <b>&copy; Mark Doliner</b>',
+    loading_img: '{{site.github.url}}/assets/photosphere-logo.gif',
+    navbar: 'autorotate zoom download caption fullscreen',
     default_fov: 70,
     mousewheel: false,
     size: {

@@ -3,6 +3,7 @@
   "version": "0.0.0",
 
   "dependencies": {
-    "Photo-Sphere-Viewer": "latest"
+    "Photo-Sphere-Viewer": "master",
+    "threejs-examples": "master"
   }
 }
