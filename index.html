@@ -190,6 +190,14 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
         <td>Initial field of view, between <code>min_fov</code> and <code>max_fov</code>.</td>
       </tr>
       <tr>
+        <td>fisheye</td>
+        <td>boolean|integer</td>
+        <td>false</td>
+        <td>Enable fisheye effect with <code>true</code> or specify effect strength (<code>true</code> = <code>1.0</code>).
+          <span class="text-danger"><i class="glyphicon glyphicon-warning-sign"></i> This mode can have side-effects on markers rendering.</span>
+        </td>
+      </tr>
+      <tr>
         <td>default_long</td>
         <td>double</td>
         <td>0</td>

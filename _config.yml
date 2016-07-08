@@ -1,7 +1,7 @@
 # name of the software
 name: Photo Sphere Viewer
 # current version of the software
-version: 3.2.0
+version: 3.2.1
 # url of the download button
 downloadUrl: https://github.com/mistic100/Photo-Sphere-Viewer
 # licence of the software
@@ -34,8 +34,8 @@ header:
 
 # google analytics
 analytics:
-  account:
-  domain:
+  account: UA-28192323-3
+  domain: auto
 
 # github buttons
 githubButton:

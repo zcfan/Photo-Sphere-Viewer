@@ -131,7 +131,7 @@ title: Markers
         <td>anchor</td>
         <td>string</td>
         <td>'center center'</td>
-        <td>Defines where the marker is placed toward its point. Any CSS position is valid like <code>bottom
+        <td>Defines where the marker is placed toward its position. Any CSS position is valid like <code>bottom
           center</code> or <code>20% 80%</code><br>
           <i>Ignored for polygons</i>.
         </td>
@@ -191,7 +191,7 @@ title: Markers
 
   <h4><code>.addMarker(properties [, render])</code></h4>
   <p>Adds a new marker to the viewer. The method returns an object representing the actual marker with all <code>properties</code>
-    and an additional <code>$el</code> attribute, reference to the HTMLElement in the viewer.</p>
+    and an additional <code>$el</code> attribute, referencing the HTMLElement in the viewer.</p>
   <p>Set the <code>render</code> flag to false to postpone viewer update (usefull when adding a batch of markers), call
     <code>render()</code> method when done.</p>
   <!-- @formatter:off -->
@@ -225,8 +225,8 @@ viewer.updateMarker(marker);
 {% endhighlight %}
 <!-- @formatter:on -->
 
-  <h4><code>.getMarker(marker | markerId)</code></h4>
-  <p>Returns the internal marker object from a properties object or a marker id.</p>
+  <h4><code>.getMarker(markerId)</code></h4>
+  <p>Returns the internal marker object for a marker id.</p>
   <!-- @formatter:off -->
 {% highlight javascript %}
 var marker = viewer.getMarker('marker-1');
@@ -284,6 +284,16 @@ viewer.on('select-marker', function(marker) {
 {% highlight javascript %}
 viewer.on('unselect-marker', function(marker) {
   alert(marker.id + ' was selected');
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
+  <h4><code>render-markers-list [markers]</code></h4>
+  <p>Used to alter the list of markers displayed on the side-panel.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('render-markers-list', function(markers) {
+  return markers.slice(0, 5);
 });
 {% endhighlight %}
 <!-- @formatter:on -->

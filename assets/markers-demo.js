@@ -72,12 +72,15 @@ PSV.on('click', function(e) {
     width: 32,
     height: 32,
     anchor: 'bottom center',
-    tooltip: 'Generated pin'
+    tooltip: 'Generated pin',
+    data: {
+      generated: true
+    }
   });
 });
 
 PSV.on('select-marker', function(marker) {
-  if (marker.id.indexOf('#') === 0) {
+  if (marker.data && marker.data.generated) {
     PSV.removeMarker(marker);
   }
 });
