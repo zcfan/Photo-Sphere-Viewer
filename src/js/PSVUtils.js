@@ -220,6 +220,17 @@ PSVUtils.isInteger = Number.isInteger || function(value) {
   };
 
 /**
+ * Computes the sum of an array
+ * @param {number[]} array
+ * @returns {number}
+ */
+PSVUtils.sum = function(array) {
+  return array.reduce(function(a, b) {
+    return a + b;
+  }, 0);
+};
+
+/**
  * Returns the value of a given attribute in the panorama metadata
  * @param {string} data
  * @param {string} attr

@@ -83,11 +83,103 @@ PhotoSphereViewer.prototype._loadXMP = function(panorama) {
 
 /**
  * Loads the sphere texture
- * @param {string} panorama
+ * @param {string|string[]} panorama
  * @returns {promise}
  * @private
  */
 PhotoSphereViewer.prototype._loadTexture = function(panorama) {
+  if (Array.isArray(panorama)) {
+    if (panorama.length !== 6) {
+      throw new PSVError('Must provide exactly 6 image paths when using cubemap.');
+    }
+
+    if (this.prop.isCubemap === false) {
+      throw new PSVError('The viewer was initialized with an equirectangular panorama, cannot switch to cubemap.');
+    }
+
+    this.prop.isCubemap = true;
+
+    return this._loadCubemapTexture(panorama);
+  }
+  else {
+    if (this.prop.isCubemap === true) {
+      throw new PSVError('The viewer was initialized with an cubemap, cannot switch to equirectangular panorama.');
+    }
+
+    this.prop.isCubemap = false;
+
+    return this._loadEquirectangularTexture(panorama);
+  }
+};
+
+/**
+ * Load the six textures of the cube
+ * @param {string[]} panorama
+ * @returns {promise}
+ * @private
+ */
+PhotoSphereViewer.prototype._loadCubemapTexture = function(panorama) {
+  var defer = D();
+  var loader = new THREE.ImageLoader();
+  var progress = [0, 0, 0, 0, 0, 0];
+  var loaded = [];
+
+  loader.setCrossOrigin('anonymous');
+
+  var onend = function() {
+    loaded.forEach(function(img) {
+      img.needsUpdate = true;
+      img.minFilter = THREE.LinearFilter;
+      img.generateMipmaps = false;
+    });
+
+    defer.resolve(loaded);
+  };
+
+  var onload = function(i, img) {
+    progress[i] = 100;
+
+    if (this.loader) {
+      this.loader.setProgress(PSVUtils.sum(progress) / 6);
+    }
+
+    loaded[i] = new THREE.Texture(img);
+
+    if (loaded.length === 6) {
+      onend();
+    }
+  };
+
+  var onprogress = function(i, e) {
+    if (e.lengthComputable && this.loader) {
+      var new_progress = parseInt(e.loaded / e.total * 100);
+      if (new_progress > progress[i]) {
+        progress[i] = new_progress;
+        this.loader.setProgress(PSVUtils.sum(progress) / 6);
+      }
+    }
+  };
+
+  var onerror = function(i, e) {
+    this.container.textContent = 'Cannot load image';
+    defer.reject(e);
+    throw new PSVError('Cannot load image ' + i);
+  };
+
+  for (var i = 0; i < 6; i++) {
+    loader.load(panorama[i], onload.bind(this, i), onprogress.bind(this, i), onerror.bind(this, i));
+  }
+
+  return defer.promise;
+};
+
+/**
+ * Loads the sphere texture
+ * @param {string} panorama
+ * @returns {promise}
+ * @private
+ */
+PhotoSphereViewer.prototype._loadEquirectangularTexture = function(panorama) {
   var self = this;
 
   if (this.config.cache_texture) {
@@ -180,21 +272,22 @@ PhotoSphereViewer.prototype._loadTexture = function(panorama) {
       }
     };
 
-    var onerror = function() {
-      self.container.textContent = 'Cannot load image';
+    var onerror = function(e) {
+      this.container.textContent = 'Cannot load image';
+      defer.reject(e);
       throw new PSVError('Cannot load image');
     };
 
     loader.load(panorama, onload, onprogress, onerror);
-
-    return defer.promise;
   });
+
+  return defer.promise;
 };
 
 /**
  * Applies the texture to the scene
  * Creates the scene if needed
- * @param {THREE.Texture} texture - The sphere texture
+ * @param {THREE.Texture} texture - The sphere or cube texture
  * @private
  */
 PhotoSphereViewer.prototype._setTexture = function(texture) {
@@ -202,11 +295,22 @@ PhotoSphereViewer.prototype._setTexture = function(texture) {
     this._createScene();
   }
 
-  if (this.mesh.material.map) {
-    this.mesh.material.map.dispose();
-  }
+  if (this.prop.isCubemap) {
+    for (var i = 0; i < 6; i++) {
+      if (this.mesh.material.materials[i].map) {
+        this.mesh.material.materials[i].map.dispose();
+      }
 
-  this.mesh.material.map = texture;
+      this.mesh.material.materials[i].map = texture[i];
+    }
+  }
+  else {
+    if (this.mesh.material.map) {
+      this.mesh.material.map.dispose();
+    }
+
+    this.mesh.material.map = texture;
+  }
 
   this.trigger('panorama-loaded');
 
@@ -235,15 +339,12 @@ PhotoSphereViewer.prototype._createScene = function() {
   this.scene = new THREE.Scene();
   this.scene.add(this.camera);
 
-  // The middle of the panorama is placed at longitude=0
-  var geometry = new THREE.SphereGeometry(PhotoSphereViewer.SPHERE_RADIUS, this.config.sphere_segments, this.config.sphere_segments, -PSVUtils.HalfPI);
-
-  var material = new THREE.MeshBasicMaterial();
-  material.side = THREE.DoubleSide;
-  material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 0.5;
-
-  this.mesh = new THREE.Mesh(geometry, material);
-  this.mesh.scale.x = -1;
+  if (this.prop.isCubemap) {
+    this._createCubemap();
+  }
+  else {
+    this._createSphere();
+  }
 
   this.scene.add(this.mesh);
 
@@ -282,6 +383,47 @@ PhotoSphereViewer.prototype._createScene = function() {
     this.composer.addPass(this.passes.copy);
     this.composer.addPass(this.passes.blur);
   }
+};
+
+/**
+ * Creates the cube mesh
+ * @private
+ */
+PhotoSphereViewer.prototype._createCubemap = function() {
+  var geometry = new THREE.BoxGeometry(
+    PhotoSphereViewer.CUBE_LENGTH, PhotoSphereViewer.CUBE_LENGTH, PhotoSphereViewer.CUBE_LENGTH,
+    this.config.cube_segments, this.config.cube_segments, this.config.cube_segments
+  );
+
+  var materials = [];
+  for (var i = 0; i < 6; i++) {
+    var material = new THREE.MeshBasicMaterial();
+    material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 1;
+    material.side = THREE.DoubleSide;
+    materials.push(material);
+  }
+
+  this.mesh = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
+  this.mesh.position.x-= PhotoSphereViewer.SPHERE_RADIUS;
+  this.mesh.position.y-= PhotoSphereViewer.SPHERE_RADIUS;
+  this.mesh.position.z-= PhotoSphereViewer.SPHERE_RADIUS;
+  this.mesh.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1))
+};
+
+/**
+ * Creates the sphere mesh
+ * @private
+ */
+PhotoSphereViewer.prototype._createSphere = function() {
+  // The middle of the panorama is placed at longitude=0
+  var geometry = new THREE.SphereGeometry(PhotoSphereViewer.SPHERE_RADIUS, this.config.sphere_segments, this.config.sphere_segments, -PSVUtils.HalfPI);
+
+  var material = new THREE.MeshBasicMaterial();
+  material.side = THREE.DoubleSide;
+  material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 0.5;
+
+  this.mesh = new THREE.Mesh(geometry, material);
+  this.mesh.scale.x = -1;
 };
 
 /**
