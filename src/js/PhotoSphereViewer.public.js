@@ -542,7 +542,7 @@ PhotoSphereViewer.prototype.clearPanoramaCache = function(panorama) {
 };
 
 /**
- * Retrieve teh cache for a panorama
+ * Retrieve the cache for a panorama
  * @param {string} panorama
  * @returns {object}
  */

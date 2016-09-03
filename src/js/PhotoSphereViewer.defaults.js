@@ -17,10 +17,22 @@ PhotoSphereViewer.INERTIA_WINDOW = 300;
 PhotoSphereViewer.SPHERE_RADIUS = 100;
 
 /**
+ * Number of vertice of the THREE.SphereGeometry
+ * @type {int}
+ */
+PhotoSphereViewer.SPHERE_VERTICES = 64;
+
+/**
  * Length of the THREE.BoxGeometry
  * @type {int}
  */
 PhotoSphereViewer.CUBE_LENGTH = 200;
+
+/**
+ * Number of vertices of each side of the THREE.BoxGeometry
+ * @type {int}
+ */
+PhotoSphereViewer.CUBE_VERTICES = 8;
 
 /**
  * Map between keyboard events "keyCode|which" and "key"
@@ -63,28 +75,26 @@ PhotoSphereViewer.SYSTEM = {
  * @type {Object}
  */
 PhotoSphereViewer.DEFAULTS = {
-  panorama: null,
-  container: null,
-  caption: null,
-  autoload: true,
-  usexmpdata: true,
-  pano_data: null,
-  webgl: true,
-  sphere_segments: 64,
-  cube_segments: 8,
-  min_fov: 30,
-  max_fov: 90,
-  default_fov: null,
-  default_long: 0,
-  default_lat: 0,
-  longitude_range: null,
-  latitude_range: null,
-  move_speed: 1,
-  time_anim: 2000,
-  anim_speed: '2rpm',
-  anim_lat: null,
-  fisheye: false,
-  navbar: [
+  panorama: null, // url(s) of the panorama
+  container: null, // htmlelement/id of container
+  caption: null, // text displayed in the navbar
+  autoload: true, // automatically load the panorama
+  usexmpdata: true, // use xmp data if present
+  pano_data: null, // overwrite xmp data
+  webgl: true, // enable webgl
+  min_fov: 30, // minimum field-of-view (max zoom)
+  max_fov: 90, // maximum field-of-view (min zoom)
+  default_fov: null, //  field-of-view
+  default_long: 0, // default longitude
+  default_lat: 0, // default latitude
+  longitude_range: null, // allowed longitude range
+  latitude_range: null, // allowed latitude range
+  move_speed: 1, // mouse move speed ratio
+  time_anim: 2000, // delay before automatic rotation
+  anim_speed: '2rpm', // automatic rotation speed
+  anim_lat: null, // automatic rotation latitude
+  fisheye: false, // fisheye amount (0-1)
+  navbar: [ // navigation par configuration
     'autorotate',
     'zoom',
     'download',
@@ -93,12 +103,12 @@ PhotoSphereViewer.DEFAULTS = {
     'gyroscope',
     'fullscreen'
   ],
-  tooltip: {
+  tooltip: { // tooltip configuration
     offset: 5,
     arrow_size: 7,
     delay: 100
   },
-  lang: {
+  lang: { // labels translation
     autorotate: 'Automatic rotation',
     zoom: 'Zoom',
     zoomOut: 'Zoom out',
@@ -108,23 +118,23 @@ PhotoSphereViewer.DEFAULTS = {
     markers: 'Markers',
     gyroscope: 'Gyroscope'
   },
-  mousewheel: true,
-  mousemove: true,
-  keyboard: true,
-  gyroscope: false,
-  move_inertia: true,
-  click_event_on_marker: false,
-  transition: {
+  mousewheel: true, // enable mouse wheel zoom
+  mousemove: true, // enable mouse/touch move
+  keyboard: true, // enable keyboard move in fullscreen
+  gyroscope: false, // enable gyroscope move
+  move_inertia: true, // enable mouse/touch move inertia
+  click_event_on_marker: false, // trigger "click" event when a marker is activated
+  transition: { // options for "setPanorama"
     duration: 1500,
     loader: true,
     blur: false
   },
-  loading_img: null,
-  loading_txt: 'Loading...',
-  size: null,
-  cache_texture: 5,
-  templates: {},
-  markers: []
+  loading_img: null, // path to loading image
+  loading_txt: 'Loading...', // loading text
+  size: null, // force viewer size (width & height)
+  cache_texture: 6, // number of images to cache in memory
+  templates: {}, // templates overrides
+  markers: [] // markers !
 };
 
 /**
