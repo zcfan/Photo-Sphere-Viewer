@@ -1,9 +1,10 @@
 /**
  * Loads the XMP data with AJAX
+ * @param {string} panorama
  * @returns {promise}
  * @private
  */
-PhotoSphereViewer.prototype._loadXMP = function() {
+PhotoSphereViewer.prototype._loadXMP = function(panorama) {
   if (!this.config.usexmpdata) {
     return D.resolved(null);
   }
@@ -74,7 +75,7 @@ PhotoSphereViewer.prototype._loadXMP = function() {
     throw new PSVError('Cannot load image');
   };
 
-  xhr.open('GET', this.config.panorama, true);
+  xhr.open('GET', panorama, true);
   xhr.send(null);
 
   return defer.promise;
@@ -82,13 +83,24 @@ PhotoSphereViewer.prototype._loadXMP = function() {
 
 /**
  * Loads the sphere texture
+ * @param {string} panorama
  * @returns {promise}
  * @private
  */
-PhotoSphereViewer.prototype._loadTexture = function() {
+PhotoSphereViewer.prototype._loadTexture = function(panorama) {
   var self = this;
 
-  return this._loadXMP().then(function(pano_data) {
+  if (this.config.cache_texture) {
+    var cache = this.getPanoramaCache(panorama);
+
+    if (cache) {
+      this.prop.pano_data = cache.pano_data;
+
+      return D.resolved(cache.image);
+    }
+  }
+
+  return this._loadXMP(panorama).then(function(pano_data) {
     var defer = D();
     var loader = new THREE.ImageLoader();
     var progress = pano_data ? 100 : 0;
@@ -99,6 +111,7 @@ PhotoSphereViewer.prototype._loadTexture = function() {
       if (self.loader) {
         self.loader.setProgress(100);
       }
+      self.trigger('panorama-load-progress', panorama, 100);
 
       // Config XMP data
       if (!pano_data && self.config.pano_data) {
@@ -145,6 +158,14 @@ PhotoSphereViewer.prototype._loadTexture = function() {
       texture.minFilter = THREE.LinearFilter;
       texture.generateMipmaps = false;
 
+      if (self.config.cache_texture) {
+        self._putPanoramaCache({
+          panorama: panorama,
+          image: texture,
+          pano_data: pano_data
+        });
+      }
+
       defer.resolve(texture);
     };
 
@@ -154,6 +175,7 @@ PhotoSphereViewer.prototype._loadTexture = function() {
         if (new_progress > progress) {
           progress = new_progress;
           self.loader.setProgress(progress);
+          self.trigger('panorama-load-progress', panorama, progress);
         }
       }
     };
@@ -163,7 +185,7 @@ PhotoSphereViewer.prototype._loadTexture = function() {
       throw new PSVError('Cannot load image');
     };
 
-    loader.load(self.config.panorama, onload, onprogress, onerror);
+    loader.load(panorama, onload, onprogress, onerror);
 
     return defer.promise;
   });
@@ -173,7 +195,6 @@ PhotoSphereViewer.prototype._loadTexture = function() {
  * Applies the texture to the scene
  * Creates the scene if needed
  * @param {THREE.Texture} texture - The sphere texture
- * @returns {promise}
  * @private
  */
 PhotoSphereViewer.prototype._setTexture = function(texture) {
@@ -190,8 +211,6 @@ PhotoSphereViewer.prototype._setTexture = function(texture) {
   this.trigger('panorama-loaded');
 
   this.render();
-
-  return D.resolved();
 };
 
 /**
@@ -221,6 +240,7 @@ PhotoSphereViewer.prototype._createScene = function() {
 
   var material = new THREE.MeshBasicMaterial();
   material.side = THREE.DoubleSide;
+  material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 0.5;
 
   this.mesh = new THREE.Mesh(geometry, material);
   this.mesh.scale.x = -1;
@@ -275,10 +295,11 @@ PhotoSphereViewer.prototype._transition = function(texture, position) {
   var self = this;
 
   // create a new sphere with the new texture
-  var geometry = new THREE.SphereGeometry(150, 32, 32, -PSVUtils.HalfPI);
+  var geometry = new THREE.SphereGeometry(PhotoSphereViewer.SPHERE_RADIUS * 1.5, this.config.sphere_segments, this.config.sphere_segments, -PSVUtils.HalfPI);
 
   var material = new THREE.MeshBasicMaterial();
   material.side = THREE.DoubleSide;
+  material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 0.5;
   material.map = texture;
   material.transparent = true;
   material.opacity = 0;
@@ -320,15 +341,15 @@ PhotoSphereViewer.prototype._transition = function(texture, position) {
 
   // 1st half animation
   return PSVUtils.animation({
-      properties: {
-        density: { start: 0.0, end: 1.5 },
-        opacity: { start: 0.0, end: 0.5 },
-        zoom: { start: original_zoom_lvl, end: 100 }
-      },
-      duration: self.config.transition.duration / (self.config.transition.blur ? 4 / 3 : 2),
-      easing: self.config.transition.blur ? 'outCubic' : 'linear',
-      onTick: onTick
-    })
+    properties: {
+      density: { start: 0.0, end: 1.5 },
+      opacity: { start: 0.0, end: 0.5 },
+      zoom: { start: original_zoom_lvl, end: 100 }
+    },
+    duration: self.config.transition.duration / (self.config.transition.blur ? 4 / 3 : 2),
+    easing: self.config.transition.blur ? 'outCubic' : 'linear',
+    onTick: onTick
+  })
     .then(function() {
       // 2nd half animation
       return PSVUtils.animation({
@@ -389,15 +410,15 @@ PhotoSphereViewer.prototype._reverseAutorotate = function() {
   this.config.longitude_range = null;
 
   PSVUtils.animation({
-      properties: {
-        speed: { start: this.config.anim_speed, end: 0 }
-      },
-      duration: 300,
-      easing: 'inSine',
-      onTick: function(properties) {
-        self.config.anim_speed = properties.speed;
-      }
-    })
+    properties: {
+      speed: { start: this.config.anim_speed, end: 0 }
+    },
+    duration: 300,
+    easing: 'inSine',
+    onTick: function(properties) {
+      self.config.anim_speed = properties.speed;
+    }
+  })
     .then(function() {
       return PSVUtils.animation({
         properties: {
@@ -414,4 +435,31 @@ PhotoSphereViewer.prototype._reverseAutorotate = function() {
       self.config.longitude_range = range;
       self.config.anim_speed = newSpeed;
     });
+};
+
+/**
+ * Adds a panorama to the cache
+ * @param {object} cache
+ *    - panorama
+ *    - image
+ *    - pano_data
+ * @private
+ */
+PhotoSphereViewer.prototype._putPanoramaCache = function(cache) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot add panorama to cache, cache_texture is disabled');
+  }
+
+  var existingCache = this.getPanoramaCache(cache.panorama);
+
+  if (existingCache) {
+    existingCache.image = cache.image;
+    existingCache.pano_data = cache.pano_data;
+  }
+  else {
+    this.prop.cache = this.prop.cache.slice(0, this.config.cache_texture - 1); // remove most ancient elements
+    this.prop.cache.unshift(cache);
+  }
+
+  this.trigger('panorama-cached', cache.panorama);
 };

@@ -1,6 +1,5 @@
 {
   "name": "Photo-Sphere-Viewer",
-  "version": "3.2.1",
   "authors": [
     {
       "name": "Jérémy Heleine",
@@ -25,6 +24,9 @@
     "uevent": "~1.0.0",
     "doT": "master"
   },
+  "devDependencies": {
+    "three.js-examples": "master"
+  },
   "keywords": [
     "photosphere",
     "panorama",
@@ -43,8 +45,5 @@
     "tests",
     "package.json",
     "Gruntfile.js"
-  ],
-  "devDependencies": {
-    "threejs-examples": "master"
-  }
+  ]
 }

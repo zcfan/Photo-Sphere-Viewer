@@ -1,15 +1,15 @@
 // scss-lint:disable ColorVariable
-$psv-main-background: radial-gradient(#ffffff, #fdfdfd 16%, #fbfbfb 33%, #f8f8f8 49%, #efefef 66%, #dfdfdf 82%, #bfbfbf 100%) !default !default;
+$psv-main-background: radial-gradient(#ffffff, #fdfdfd 16%, #fbfbfb 33%, #f8f8f8 49%, #efefef 66%, #dfdfdf 82%, #bfbfbf 100%) !default;
 
-$psv-loader-color: rgba(61, 61, 61, .7) !default !default;
-$psv-loader-width: 150px !default !default;
-$psv-loader-tickness: 10px !default !default;
-$psv-loader-font: 14px sans-serif !default !default;
+$psv-loader-color: rgba(61, 61, 61, .7) !default;
+$psv-loader-width: 150px !default;
+$psv-loader-tickness: 10px !default;
+$psv-loader-font: 14px sans-serif !default;
 
-$psv-navbar-height: 40px !default !default;
-$psv-navbar-background: rgba(61, 61, 61, .5) !default !default;
+$psv-navbar-height: 40px !default;
+$psv-navbar-background: rgba(61, 61, 61, .5) !default;
 
-$psv-caption-font: sans-serif !default !default;
+$psv-caption-font: sans-serif !default;
 $psv-caption-color: rgba(255, 255, 255, .7) !default;
 
 $psv-buttons-height: 20px !default;

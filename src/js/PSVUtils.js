@@ -211,6 +211,15 @@ PSVUtils.stayBetween = function(x, min, max) {
 };
 
 /**
+ * Checks if a value is an integer
+ * @param {*} value
+ * @returns {boolean}
+ */
+PSVUtils.isInteger = Number.isInteger || function(value) {
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+  };
+
+/**
  * Returns the value of a given attribute in the panorama metadata
  * @param {string} data
  * @param {string} attr

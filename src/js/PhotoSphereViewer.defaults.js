@@ -115,6 +115,7 @@ PhotoSphereViewer.DEFAULTS = {
   loading_img: null,
   loading_txt: 'Loading...',
   size: null,
+  cache_texture: 5,
   templates: {},
   markers: []
 };

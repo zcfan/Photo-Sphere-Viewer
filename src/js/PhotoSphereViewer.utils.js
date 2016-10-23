@@ -12,7 +12,12 @@ PhotoSphereViewer.loadSystem = function() {
   S.fullscreenEvent = PSVUtils.fullscreenEvent();
   S.deviceOrientationSupported = D();
 
-  window.addEventListener('deviceorientation', PhotoSphereViewer.deviceOrientationListener, false);
+  if ('DeviceOrientationEvent' in window) {
+    window.addEventListener('deviceorientation', PhotoSphereViewer.deviceOrientationListener, false);
+  }
+  else {
+    S.deviceOrientationSupported.reject();
+  }
 };
 
 /**
@@ -202,8 +207,8 @@ PhotoSphereViewer.prototype.applyRanges = function(position) {
     range = PSVUtils.clone(this.config.latitude_range);
     offset = this.prop.vFov / 180 * Math.PI / 2;
 
-    range[0] = PSVUtils.parseAngle(range[0] + offset, -Math.PI);
-    range[1] = PSVUtils.parseAngle(range[1] - offset, -Math.PI);
+    range[0] = PSVUtils.parseAngle(Math.min(range[0] + offset, range[1]), -Math.PI);
+    range[1] = PSVUtils.parseAngle(Math.max(range[1] - offset, range[0]), -Math.PI);
 
     if (position.latitude < range[0]) {
       position.latitude = range[0];

@@ -60,7 +60,7 @@ PhotoSphereViewer.prototype.isGyroscopeEnabled = function() {
  * @returns {boolean}
  */
 PhotoSphereViewer.prototype.isFullscreenEnabled = function() {
-  return PSVUtils.isFullscreenEnabled(this.container);
+  return PSVUtils.isFullscreenEnabled(this.parent);
 };
 
 /**
@@ -171,6 +171,7 @@ PhotoSphereViewer.prototype.destroy = function() {
   delete this.raycaster;
   delete this.passes;
   delete this.config;
+  this.prop.cache.length = 0;
 };
 
 /**
@@ -183,6 +184,10 @@ PhotoSphereViewer.prototype.destroy = function() {
  * @returns {promise}
  */
 PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
+  if (this.prop.loading_promise !== null) {
+    throw new PSVError('Loading already in progress');
+  }
+
   if (typeof position == 'boolean') {
     transition = position;
     position = undefined;
@@ -201,19 +206,20 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
   if (!transition || !this.config.transition || !this.scene) {
     this.loader = new PSVLoader(this);
 
-    return this._loadTexture()
-      .then(this._setTexture.bind(this))
-      .then(function() {
+    this.prop.loading_promise = this._loadTexture(this.config.panorama)
+      .ensure(function() {
         if (self.loader) {
           self.loader.destroy();
           self.loader = null;
         }
 
+        self.prop.loading_promise = null;
+      })
+      .then(function(texture) {
+        self._setTexture(texture);
+
         if (position) {
           self.rotate(position);
-        }
-        else {
-          self.render();
         }
       })
       .rethrow();
@@ -223,7 +229,7 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
       this.loader = new PSVLoader(this);
     }
 
-    return this._loadTexture()
+    this.prop.loading_promise = this._loadTexture(this.config.panorama)
       .then(function(texture) {
         if (self.loader) {
           self.loader.destroy();
@@ -232,8 +238,18 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
 
         return self._transition(texture, position);
       })
+      .ensure(function() {
+        if (self.loader) {
+          self.loader.destroy();
+          self.loader = null;
+        }
+
+        self.prop.loading_promise = null;
+      })
       .rethrow();
   }
+
+  return this.prop.loading_promise;
 };
 
 /**
@@ -415,6 +431,8 @@ PhotoSphereViewer.prototype.animate = function(position, duration) {
     easing: 'inOutSine',
     onTick: this.rotate.bind(this)
   });
+
+  return this.prop.animation_promise;
 };
 
 /**
@@ -467,7 +485,7 @@ PhotoSphereViewer.prototype.zoomOut = function() {
  */
 PhotoSphereViewer.prototype.toggleFullscreen = function() {
   if (!this.isFullscreenEnabled()) {
-    PSVUtils.requestFullscreen(this.container);
+    PSVUtils.requestFullscreen(this.parent);
   }
   else {
     PSVUtils.exitFullscreen();
@@ -486,4 +504,54 @@ PhotoSphereViewer.prototype.startKeyboardControl = function() {
  */
 PhotoSphereViewer.prototype.stopKeyboardControl = function() {
   window.removeEventListener('keydown', this);
+};
+
+/**
+ * Preload a panorama file without displaying it
+ * @param {string} panorama
+ * @returns {promise}
+ */
+PhotoSphereViewer.prototype.preloadPanorama = function(panorama) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot preload panorama, cache_texture is disabled');
+  }
+
+  return this._loadTexture(panorama);
+};
+
+/**
+ * Removes a specific panorama from the cache or clear the entire cache
+ * @param {string} [panorama]
+ */
+PhotoSphereViewer.prototype.clearPanoramaCache = function(panorama) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot clear cache, cache_texture is disabled');
+  }
+
+  if (panorama) {
+    for (var i = 0, l = this.prop.cache.length; i < l; i++) {
+      if (this.prop.cache[i].panorama === panorama) {
+        this.prop.cache.splice(i, 1);
+        break;
+      }
+    }
+  }
+  else {
+    this.prop.cache.length = 0;
+  }
+};
+
+/**
+ * Retrieve teh cache for a panorama
+ * @param {string} panorama
+ * @returns {object}
+ */
+PhotoSphereViewer.prototype.getPanoramaCache = function(panorama) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot query cache, cache_texture is disabled');
+  }
+
+  return this.prop.cache.filter(function(cache) {
+    return cache.panorama === panorama;
+  }).shift();
 };

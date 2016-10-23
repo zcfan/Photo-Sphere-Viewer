@@ -25,7 +25,7 @@ function PhotoSphereViewer(options) {
   }
 
   if ((!PhotoSphereViewer.SYSTEM.isWebGLSupported || !this.config.webgl) && !PSVUtils.checkTHREE('CanvasRenderer', 'Projector')) {
-    throw new PSVError('Missing Three.js components: CanvasRenderer, Projector. Get them from threejs-examples package.');
+    throw new PSVError('Missing Three.js components: CanvasRenderer, Projector. Get them from three.js-examples package.');
   }
 
   if (this.config.transition && this.config.transition.blur) {
@@ -34,7 +34,7 @@ function PhotoSphereViewer(options) {
       console.warn('PhotoSphereViewer: Using canvas rendering, blur transition disabled.');
     }
     else if (!PSVUtils.checkTHREE('EffectComposer', 'RenderPass', 'ShaderPass', 'MaskPass', 'CopyShader')) {
-      throw new PSVError('Missing Three.js components: EffectComposer, RenderPass, ShaderPass, MaskPass, CopyShader. Get them from threejs-examples package.');
+      throw new PSVError('Missing Three.js components: EffectComposer, RenderPass, ShaderPass, MaskPass, CopyShader. Get them from three.js-examples package.');
     }
   }
 
@@ -65,6 +65,11 @@ function PhotoSphereViewer(options) {
     this.config.max_fov = PhotoSphereViewer.DEFAULTS.max_fov;
     this.config.min_fov = PhotoSphereViewer.DEFAULTS.min_fov;
     console.warn('PhotoSphereViewer: max_fov cannot be lower than min_fov.');
+  }
+
+  if (this.config.cache_texture && (!PSVUtils.isInteger(this.config.cache_texture) || this.config.cache_texture < 0)) {
+    this.config.cache_texture = PhotoSphereViewer.DEFAULTS.cache_texture;
+    console.warn('PhotoSphreViewer: invalid valud for cache_texture');
   }
 
   // normalize config
@@ -145,7 +150,9 @@ function PhotoSphereViewer(options) {
     orientation_reqid: null, // animationRequest id of the device orientation
     autorotate_reqid: null, // animationRequest id of the automatic rotation
     animation_promise: null, // promise of the current animation (either go to position or image transition)
+    loading_promise: null, // promise of the setPanorama method
     start_timeout: null, // timeout id of the automatic rotation delay
+    cache: [],
     size: { // size of the container
       width: 0,
       height: 0

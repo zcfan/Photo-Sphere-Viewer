@@ -76,7 +76,7 @@ PSVNavBarGyroscopeButton.prototype._onAvailabilityChange = function(available) {
       this.show();
     }
     else {
-      throw new PSVError('Missing Three.js components: DeviceOrientationControls. Get them from threejs-examples package.');
+      throw new PSVError('Missing Three.js components: DeviceOrientationControls. Get them from three.js-examples package.');
     }
   }
 };

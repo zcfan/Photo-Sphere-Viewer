@@ -1,6 +1,6 @@
 {
-  "name": "Photo-Sphere-Viewer",
-  "version": "3.2.1",
+  "name": "photo-sphere-viewer",
+  "version": "3.2.2",
   "authors": [
     {
       "name": "Jérémy Heleine",
@@ -15,6 +15,12 @@
   ],
   "description": "A JavaScript library to display Photo Sphere panoramas",
   "homepage": "http://mistic100.github.io/Photo-Sphere-Viewer",
+  "dependencies": {
+    "three": ">= 0.70.0",
+    "d.js": "~0.7.3",
+    "uevent": "~1.0.0",
+    "dot": "olado/doT#master"
+  },
   "devDependencies": {
     "grunt": "^1.0.0",
     "grunt-contrib-concat": "^1.0.0",

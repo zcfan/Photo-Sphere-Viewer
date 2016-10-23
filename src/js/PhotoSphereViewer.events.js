@@ -194,6 +194,11 @@ PhotoSphereViewer.prototype._onTouchEnd = function(evt) {
  * @private
  */
 PhotoSphereViewer.prototype._stopMove = function(evt) {
+  if (this.isGyroscopeEnabled()) {
+    this._click(evt);
+    return;
+  }
+
   if (this.prop.moving) {
     // move threshold to trigger a click
     if (Math.abs(evt.clientX - this.prop.start_mouse_x) < PhotoSphereViewer.MOVE_THRESHOLD && Math.abs(evt.clientY - this.prop.start_mouse_y) < PhotoSphereViewer.MOVE_THRESHOLD) {

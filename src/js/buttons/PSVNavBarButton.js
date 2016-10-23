@@ -44,7 +44,8 @@ PSVNavBarButton.prototype.setIcon = function(icon, container) {
   }
   if (icon) {
     container.innerHTML = PhotoSphereViewer.ICONS[icon];
-    container.querySelector('svg').classList.add('psv-button-svg');
+    // classList not supported on IE11, className is read-only !!!!
+    container.querySelector('svg').setAttribute('class', 'psv-button-svg');
   }
   else {
     container.innerHTML = '';
