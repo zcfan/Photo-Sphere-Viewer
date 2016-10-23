@@ -70,7 +70,7 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
     <h4>Canvas rendering</h4>
 
     <p>In order to get Photo Sphere Viewer working on browsers without WebGL you will need some additional files from
-      Three.js examples (also available in <code>threejs-examples</code> Bower package) :</p>
+      Three.js examples (also available in <code>three.js-examples</code> Bower package) :</p>
     <ul>
       <!-- @formatter:off -->
       <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/renderers/CanvasRenderer.js">CanvasRenderer.js</a></li>
@@ -83,7 +83,8 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
     <h4>Transition effect</h4>
 
     <p>In order to perform the transition effect between two panoramas (<code>transition.blur</code> option), Photo
-      Sphere Viewer requires the following files from Three.js examples (also available in <code>threejs-examples</code>
+      Sphere Viewer requires the following files from Three.js examples (also available in
+      <code>three.js-examples</code>
       Bower package) :</p>
     <ul>
       <!-- @formatter:off -->
@@ -100,7 +101,7 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
     <h4>Gyroscope support</h4>
 
     <p>In order to be able to respond to device gyroscope (<code>gyroscope</code> option), Photo Sphere Viewer requires
-      the following files from Three.js examples (also available in <code>threejs-examples</code> Bower package) :</p>
+      the following files from Three.js examples (also available in <code>three.js-examples</code> Bower package) :</p>
     <ul>
       <!-- @formatter:off -->
       <li><a href="https://github.com/mrdoob/three.js/blob/master/examples/js/controls/DeviceOrientationControls.js">DeviceOrientationControls.js</a></li>
@@ -193,7 +194,8 @@ require(['photo-sphere-viewer'], function(PhotoSphereViewer) {
         <td>fisheye</td>
         <td>boolean|integer</td>
         <td>false</td>
-        <td>Enable fisheye effect with <code>true</code> or specify effect strength (<code>true</code> = <code>1.0</code>).
+        <td>Enable fisheye effect with <code>true</code> or specify effect strength (<code>true</code> =
+          <code>1.0</code>).
           <span class="text-danger"><i class="glyphicon glyphicon-warning-sign"></i> This mode can have side-effects on markers rendering.</span>
         </td>
       </tr>
@@ -391,6 +393,38 @@ transition: {
         </td>
       </tr>
       <tr>
+        <td>pano_data</td>
+        <td>object</td>
+        <td></td>
+        <td>Manually define cropping config (if <code>usexmpdata = false</code> or no XMP tag is found)
+          <a data-bootbox="pano_data_details"><i class="glyphicon glyphicon-info-sign"></i> example</a>.
+          <div id="pano_data_details" class="hidden" title="Pano data example">
+            <p>In this example a 4000x2000 image is used as a portion of a 6000x3000 panorama, the remaining space will
+              be rendered black.</p>
+            <!-- @formatter:off -->
+{% highlight js %}
+pano_data: {
+  full_width: 6000,
+  full_height: 3000,
+  cropped_width: 4000,
+  cropped_height: 2000,
+  cropped_x: 1000,
+  cropped_y: 500
+}
+{% endhighlight %}
+<!-- @formatter:on -->
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>cache_texture</td>
+        <td>integer</td>
+        <td>5</td>
+        <td>Number of texture objects to cache into memory, this is to prevent network overload when calling
+          <code>setPanorama</code> multiple times.
+        </td>
+      </tr>
+      <tr>
         <td>tooltip</td>
         <td>object</td>
         <td>
@@ -438,13 +472,13 @@ tooltip: {
     <p>The memory used by the ThreeJS context is not totally cleared. This will be fixed as soon as possible.</p>
   </div>
 
-  <h4><code>.load()</code></h4>
+  <h4><code>.load() -> Promise</code></h4>
   <p>Inits panorama loading if <code>autoload</code> was false.</p>
 
   <h4><code>.render()</code></h4>
   <p>Performs a full render of the viewer, useful if you manually modified some properties or updated the markers.</p>
 
-  <h4><code>.setPanorama(path [, position] [, transition]</code></h4>
+  <h4><code>.setPanorama(path [, position] [, transition]) -> Promise</code></h4>
   <p>Loads a new panorama image, optionnally changing the camera position and activating or not the transition
     animation.</p>
   <!-- @formatter:off -->
@@ -471,7 +505,7 @@ viewer.rotate({
 {% endhighlight %}
 <!-- @formatter:on -->
 
-  <h4><code>.animate(position, duration | speed)</code></h4>
+  <h4><code>.animate(position, duration | speed) -> Promise</code></h4>
   <p>Rotates the view to specific longitude and latitude with a smooth animation. The last param can be a duration in
     milliseconds or a speed with the same format as <code>anim_speed</code> parameter.</p>
   <!-- @formatter:off -->
@@ -561,6 +595,12 @@ viewer.showPanel(html);
 
   <h4><code>.hideNavbar()</code> / <code>.showNavbar()</code> / <code>.toggleNavbar()</code></h4>
   <p>Hides or show the navbar.</p>
+
+  <h4><code>.preloadPanorama(panorama) -> Promise</code></h4>
+  <p>Put a panorama image in the cache for future use with <code>.setPanorama</code>.</p>
+
+  <h4><code>.clearPanoramaCache([panorama])</code></h4>
+  <p>Removes an image from the cache or clears the entire cache.</p>
 
   <h3>Getters &amp; setters</h3>
 
@@ -692,6 +732,16 @@ viewer.on('size-updated', function(size) {
 {% endhighlight %}
 <!-- @formatter:on -->
 
+  <h4><code>panorama-load-progress [panorama, progress]</code></h4>
+  <p>Triggered while a panorama image is loading, with loading progression.</p>
+  <!-- @formatter:off -->
+{% highlight javascript %}
+viewer.on('panorama-load-progress', function(panorama, progress) {
+  // progress goes from 0 to 100
+});
+{% endhighlight %}
+<!-- @formatter:on -->
+
   <h4><code>open-panel</code> / <code>close-panel</code></h4>
 
   <h4><code>show-tooltip</code> / <code>hide-tooltip</code></h4>
@@ -792,8 +842,8 @@ viewer.getNavbarButton('my-button').hide();
 <script src="{{site.github.url}}/dist/D.js/lib/D.min.js"></script>
 <script src="{{site.github.url}}/dist/doT/doT.min.js"></script>
 <script src="{{site.github.url}}/dist/uevent/uevent.min.js"></script>
-<script src="{{site.github.url}}/dist/threejs-examples/examples/js/renderers/CanvasRenderer.js"></script>
-<script src="{{site.github.url}}/dist/threejs-examples/examples/js/renderers/Projector.js"></script>
+<script src="{{site.github.url}}/dist/three.js-examples/examples/js/renderers/CanvasRenderer.js"></script>
+<script src="{{site.github.url}}/dist/three.js-examples/examples/js/renderers/Projector.js"></script>
 <script src="{{site.github.url}}/dist/Photo-Sphere-Viewer/dist/photo-sphere-viewer.min.js"></script>
 
 <script>

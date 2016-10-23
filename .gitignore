@@ -15,5 +15,5 @@ Gemfile.lock
 !/dist/three.js/three.min.js
 /dist/Photo-Sphere-Viewer/*
 !/dist/Photo-Sphere-Viewer/dist
-/dist/threejs-examples/*
-!/dist/threejs-examples/examples
+/dist/three.js-examples/*
+!/dist/three.js-examples/examples

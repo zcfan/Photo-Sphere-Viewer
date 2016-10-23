@@ -1,5 +1,5 @@
 /*!
- * Photo Sphere Viewer 3.2.1
+ * Photo Sphere Viewer 3.2.2
  * Copyright (c) 2014-2015 Jérémy Heleine
  * Copyright (c) 2015-2016 Damien "Mistic" Sorel
  * Licensed under MIT (http://opensource.org/licenses/MIT)
@@ -45,7 +45,7 @@ function PhotoSphereViewer(options) {
   }
 
   if ((!PhotoSphereViewer.SYSTEM.isWebGLSupported || !this.config.webgl) && !PSVUtils.checkTHREE('CanvasRenderer', 'Projector')) {
-    throw new PSVError('Missing Three.js components: CanvasRenderer, Projector. Get them from threejs-examples package.');
+    throw new PSVError('Missing Three.js components: CanvasRenderer, Projector. Get them from three.js-examples package.');
   }
 
   if (this.config.transition && this.config.transition.blur) {
@@ -54,7 +54,7 @@ function PhotoSphereViewer(options) {
       console.warn('PhotoSphereViewer: Using canvas rendering, blur transition disabled.');
     }
     else if (!PSVUtils.checkTHREE('EffectComposer', 'RenderPass', 'ShaderPass', 'MaskPass', 'CopyShader')) {
-      throw new PSVError('Missing Three.js components: EffectComposer, RenderPass, ShaderPass, MaskPass, CopyShader. Get them from threejs-examples package.');
+      throw new PSVError('Missing Three.js components: EffectComposer, RenderPass, ShaderPass, MaskPass, CopyShader. Get them from three.js-examples package.');
     }
   }
 
@@ -85,6 +85,11 @@ function PhotoSphereViewer(options) {
     this.config.max_fov = PhotoSphereViewer.DEFAULTS.max_fov;
     this.config.min_fov = PhotoSphereViewer.DEFAULTS.min_fov;
     console.warn('PhotoSphereViewer: max_fov cannot be lower than min_fov.');
+  }
+
+  if (this.config.cache_texture && (!PSVUtils.isInteger(this.config.cache_texture) || this.config.cache_texture < 0)) {
+    this.config.cache_texture = PhotoSphereViewer.DEFAULTS.cache_texture;
+    console.warn('PhotoSphreViewer: invalid valud for cache_texture');
   }
 
   // normalize config
@@ -165,7 +170,9 @@ function PhotoSphereViewer(options) {
     orientation_reqid: null, // animationRequest id of the device orientation
     autorotate_reqid: null, // animationRequest id of the automatic rotation
     animation_promise: null, // promise of the current animation (either go to position or image transition)
+    loading_promise: null, // promise of the setPanorama method
     start_timeout: null, // timeout id of the automatic rotation delay
+    cache: [],
     size: { // size of the container
       width: 0,
       height: 0
@@ -260,10 +267,11 @@ uEvent.mixin(PhotoSphereViewer);
 
 /**
  * Loads the XMP data with AJAX
+ * @param {string} panorama
  * @returns {promise}
  * @private
  */
-PhotoSphereViewer.prototype._loadXMP = function() {
+PhotoSphereViewer.prototype._loadXMP = function(panorama) {
   if (!this.config.usexmpdata) {
     return D.resolved(null);
   }
@@ -334,7 +342,7 @@ PhotoSphereViewer.prototype._loadXMP = function() {
     throw new PSVError('Cannot load image');
   };
 
-  xhr.open('GET', this.config.panorama, true);
+  xhr.open('GET', panorama, true);
   xhr.send(null);
 
   return defer.promise;
@@ -342,13 +350,24 @@ PhotoSphereViewer.prototype._loadXMP = function() {
 
 /**
  * Loads the sphere texture
+ * @param {string} panorama
  * @returns {promise}
  * @private
  */
-PhotoSphereViewer.prototype._loadTexture = function() {
+PhotoSphereViewer.prototype._loadTexture = function(panorama) {
   var self = this;
 
-  return this._loadXMP().then(function(pano_data) {
+  if (this.config.cache_texture) {
+    var cache = this.getPanoramaCache(panorama);
+
+    if (cache) {
+      this.prop.pano_data = cache.pano_data;
+
+      return D.resolved(cache.image);
+    }
+  }
+
+  return this._loadXMP(panorama).then(function(pano_data) {
     var defer = D();
     var loader = new THREE.ImageLoader();
     var progress = pano_data ? 100 : 0;
@@ -359,6 +378,7 @@ PhotoSphereViewer.prototype._loadTexture = function() {
       if (self.loader) {
         self.loader.setProgress(100);
       }
+      self.trigger('panorama-load-progress', panorama, 100);
 
       // Config XMP data
       if (!pano_data && self.config.pano_data) {
@@ -405,6 +425,14 @@ PhotoSphereViewer.prototype._loadTexture = function() {
       texture.minFilter = THREE.LinearFilter;
       texture.generateMipmaps = false;
 
+      if (self.config.cache_texture) {
+        self._putPanoramaCache({
+          panorama: panorama,
+          image: texture,
+          pano_data: pano_data
+        });
+      }
+
       defer.resolve(texture);
     };
 
@@ -414,6 +442,7 @@ PhotoSphereViewer.prototype._loadTexture = function() {
         if (new_progress > progress) {
           progress = new_progress;
           self.loader.setProgress(progress);
+          self.trigger('panorama-load-progress', panorama, progress);
         }
       }
     };
@@ -423,7 +452,7 @@ PhotoSphereViewer.prototype._loadTexture = function() {
       throw new PSVError('Cannot load image');
     };
 
-    loader.load(self.config.panorama, onload, onprogress, onerror);
+    loader.load(panorama, onload, onprogress, onerror);
 
     return defer.promise;
   });
@@ -433,7 +462,6 @@ PhotoSphereViewer.prototype._loadTexture = function() {
  * Applies the texture to the scene
  * Creates the scene if needed
  * @param {THREE.Texture} texture - The sphere texture
- * @returns {promise}
  * @private
  */
 PhotoSphereViewer.prototype._setTexture = function(texture) {
@@ -450,8 +478,6 @@ PhotoSphereViewer.prototype._setTexture = function(texture) {
   this.trigger('panorama-loaded');
 
   this.render();
-
-  return D.resolved();
 };
 
 /**
@@ -481,6 +507,7 @@ PhotoSphereViewer.prototype._createScene = function() {
 
   var material = new THREE.MeshBasicMaterial();
   material.side = THREE.DoubleSide;
+  material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 0.5;
 
   this.mesh = new THREE.Mesh(geometry, material);
   this.mesh.scale.x = -1;
@@ -535,10 +562,11 @@ PhotoSphereViewer.prototype._transition = function(texture, position) {
   var self = this;
 
   // create a new sphere with the new texture
-  var geometry = new THREE.SphereGeometry(150, 32, 32, -PSVUtils.HalfPI);
+  var geometry = new THREE.SphereGeometry(PhotoSphereViewer.SPHERE_RADIUS * 1.5, this.config.sphere_segments, this.config.sphere_segments, -PSVUtils.HalfPI);
 
   var material = new THREE.MeshBasicMaterial();
   material.side = THREE.DoubleSide;
+  material.overdraw = PhotoSphereViewer.SYSTEM.isWebGLSupported && this.config.webgl ? 0 : 0.5;
   material.map = texture;
   material.transparent = true;
   material.opacity = 0;
@@ -580,15 +608,15 @@ PhotoSphereViewer.prototype._transition = function(texture, position) {
 
   // 1st half animation
   return PSVUtils.animation({
-      properties: {
-        density: { start: 0.0, end: 1.5 },
-        opacity: { start: 0.0, end: 0.5 },
-        zoom: { start: original_zoom_lvl, end: 100 }
-      },
-      duration: self.config.transition.duration / (self.config.transition.blur ? 4 / 3 : 2),
-      easing: self.config.transition.blur ? 'outCubic' : 'linear',
-      onTick: onTick
-    })
+    properties: {
+      density: { start: 0.0, end: 1.5 },
+      opacity: { start: 0.0, end: 0.5 },
+      zoom: { start: original_zoom_lvl, end: 100 }
+    },
+    duration: self.config.transition.duration / (self.config.transition.blur ? 4 / 3 : 2),
+    easing: self.config.transition.blur ? 'outCubic' : 'linear',
+    onTick: onTick
+  })
     .then(function() {
       // 2nd half animation
       return PSVUtils.animation({
@@ -649,15 +677,15 @@ PhotoSphereViewer.prototype._reverseAutorotate = function() {
   this.config.longitude_range = null;
 
   PSVUtils.animation({
-      properties: {
-        speed: { start: this.config.anim_speed, end: 0 }
-      },
-      duration: 300,
-      easing: 'inSine',
-      onTick: function(properties) {
-        self.config.anim_speed = properties.speed;
-      }
-    })
+    properties: {
+      speed: { start: this.config.anim_speed, end: 0 }
+    },
+    duration: 300,
+    easing: 'inSine',
+    onTick: function(properties) {
+      self.config.anim_speed = properties.speed;
+    }
+  })
     .then(function() {
       return PSVUtils.animation({
         properties: {
@@ -674,6 +702,33 @@ PhotoSphereViewer.prototype._reverseAutorotate = function() {
       self.config.longitude_range = range;
       self.config.anim_speed = newSpeed;
     });
+};
+
+/**
+ * Adds a panorama to the cache
+ * @param {object} cache
+ *    - panorama
+ *    - image
+ *    - pano_data
+ * @private
+ */
+PhotoSphereViewer.prototype._putPanoramaCache = function(cache) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot add panorama to cache, cache_texture is disabled');
+  }
+
+  var existingCache = this.getPanoramaCache(cache.panorama);
+
+  if (existingCache) {
+    existingCache.image = cache.image;
+    existingCache.pano_data = cache.pano_data;
+  }
+  else {
+    this.prop.cache = this.prop.cache.slice(0, this.config.cache_texture - 1); // remove most ancient elements
+    this.prop.cache.unshift(cache);
+  }
+
+  this.trigger('panorama-cached', cache.panorama);
 };
 
 
@@ -794,6 +849,7 @@ PhotoSphereViewer.DEFAULTS = {
   loading_img: null,
   loading_txt: 'Loading...',
   size: null,
+  cache_texture: 5,
   templates: {},
   markers: []
 };
@@ -1014,6 +1070,11 @@ PhotoSphereViewer.prototype._onTouchEnd = function(evt) {
  * @private
  */
 PhotoSphereViewer.prototype._stopMove = function(evt) {
+  if (this.isGyroscopeEnabled()) {
+    this._click(evt);
+    return;
+  }
+
   if (this.prop.moving) {
     // move threshold to trigger a click
     if (Math.abs(evt.clientX - this.prop.start_mouse_x) < PhotoSphereViewer.MOVE_THRESHOLD && Math.abs(evt.clientY - this.prop.start_mouse_y) < PhotoSphereViewer.MOVE_THRESHOLD) {
@@ -1301,7 +1362,7 @@ PhotoSphereViewer.prototype.isGyroscopeEnabled = function() {
  * @returns {boolean}
  */
 PhotoSphereViewer.prototype.isFullscreenEnabled = function() {
-  return PSVUtils.isFullscreenEnabled(this.container);
+  return PSVUtils.isFullscreenEnabled(this.parent);
 };
 
 /**
@@ -1412,6 +1473,7 @@ PhotoSphereViewer.prototype.destroy = function() {
   delete this.raycaster;
   delete this.passes;
   delete this.config;
+  this.prop.cache.length = 0;
 };
 
 /**
@@ -1424,6 +1486,10 @@ PhotoSphereViewer.prototype.destroy = function() {
  * @returns {promise}
  */
 PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
+  if (this.prop.loading_promise !== null) {
+    throw new PSVError('Loading already in progress');
+  }
+
   if (typeof position == 'boolean') {
     transition = position;
     position = undefined;
@@ -1442,19 +1508,20 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
   if (!transition || !this.config.transition || !this.scene) {
     this.loader = new PSVLoader(this);
 
-    return this._loadTexture()
-      .then(this._setTexture.bind(this))
-      .then(function() {
+    this.prop.loading_promise = this._loadTexture(this.config.panorama)
+      .ensure(function() {
         if (self.loader) {
           self.loader.destroy();
           self.loader = null;
         }
 
+        self.prop.loading_promise = null;
+      })
+      .then(function(texture) {
+        self._setTexture(texture);
+
         if (position) {
           self.rotate(position);
-        }
-        else {
-          self.render();
         }
       })
       .rethrow();
@@ -1464,7 +1531,7 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
       this.loader = new PSVLoader(this);
     }
 
-    return this._loadTexture()
+    this.prop.loading_promise = this._loadTexture(this.config.panorama)
       .then(function(texture) {
         if (self.loader) {
           self.loader.destroy();
@@ -1473,8 +1540,18 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
 
         return self._transition(texture, position);
       })
+      .ensure(function() {
+        if (self.loader) {
+          self.loader.destroy();
+          self.loader = null;
+        }
+
+        self.prop.loading_promise = null;
+      })
       .rethrow();
   }
+
+  return this.prop.loading_promise;
 };
 
 /**
@@ -1656,6 +1733,8 @@ PhotoSphereViewer.prototype.animate = function(position, duration) {
     easing: 'inOutSine',
     onTick: this.rotate.bind(this)
   });
+
+  return this.prop.animation_promise;
 };
 
 /**
@@ -1708,7 +1787,7 @@ PhotoSphereViewer.prototype.zoomOut = function() {
  */
 PhotoSphereViewer.prototype.toggleFullscreen = function() {
   if (!this.isFullscreenEnabled()) {
-    PSVUtils.requestFullscreen(this.container);
+    PSVUtils.requestFullscreen(this.parent);
   }
   else {
     PSVUtils.exitFullscreen();
@@ -1729,6 +1808,56 @@ PhotoSphereViewer.prototype.stopKeyboardControl = function() {
   window.removeEventListener('keydown', this);
 };
 
+/**
+ * Preload a panorama file without displaying it
+ * @param {string} panorama
+ * @returns {promise}
+ */
+PhotoSphereViewer.prototype.preloadPanorama = function(panorama) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot preload panorama, cache_texture is disabled');
+  }
+
+  return this._loadTexture(panorama);
+};
+
+/**
+ * Removes a specific panorama from the cache or clear the entire cache
+ * @param {string} [panorama]
+ */
+PhotoSphereViewer.prototype.clearPanoramaCache = function(panorama) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot clear cache, cache_texture is disabled');
+  }
+
+  if (panorama) {
+    for (var i = 0, l = this.prop.cache.length; i < l; i++) {
+      if (this.prop.cache[i].panorama === panorama) {
+        this.prop.cache.splice(i, 1);
+        break;
+      }
+    }
+  }
+  else {
+    this.prop.cache.length = 0;
+  }
+};
+
+/**
+ * Retrieve teh cache for a panorama
+ * @param {string} panorama
+ * @returns {object}
+ */
+PhotoSphereViewer.prototype.getPanoramaCache = function(panorama) {
+  if (!this.config.cache_texture) {
+    throw new PSVError('Cannot query cache, cache_texture is disabled');
+  }
+
+  return this.prop.cache.filter(function(cache) {
+    return cache.panorama === panorama;
+  }).shift();
+};
+
 
 /**
  * Init the global SYSTEM var with information generic support information
@@ -1744,7 +1873,12 @@ PhotoSphereViewer.loadSystem = function() {
   S.fullscreenEvent = PSVUtils.fullscreenEvent();
   S.deviceOrientationSupported = D();
 
-  window.addEventListener('deviceorientation', PhotoSphereViewer.deviceOrientationListener, false);
+  if ('DeviceOrientationEvent' in window) {
+    window.addEventListener('deviceorientation', PhotoSphereViewer.deviceOrientationListener, false);
+  }
+  else {
+    S.deviceOrientationSupported.reject();
+  }
 };
 
 /**
@@ -1934,8 +2068,8 @@ PhotoSphereViewer.prototype.applyRanges = function(position) {
     range = PSVUtils.clone(this.config.latitude_range);
     offset = this.prop.vFov / 180 * Math.PI / 2;
 
-    range[0] = PSVUtils.parseAngle(range[0] + offset, -Math.PI);
-    range[1] = PSVUtils.parseAngle(range[1] - offset, -Math.PI);
+    range[0] = PSVUtils.parseAngle(Math.min(range[0] + offset, range[1]), -Math.PI);
+    range[1] = PSVUtils.parseAngle(Math.max(range[1] - offset, range[0]), -Math.PI);
 
     if (position.latitude < range[0]) {
       position.latitude = range[0];
@@ -3787,7 +3921,8 @@ PSVNavBarButton.prototype.setIcon = function(icon, container) {
   }
   if (icon) {
     container.innerHTML = PhotoSphereViewer.ICONS[icon];
-    container.querySelector('svg').classList.add('psv-button-svg');
+    // classList not supported on IE11, className is read-only !!!!
+    container.querySelector('svg').setAttribute('class', 'psv-button-svg');
   }
   else {
     container.innerHTML = '';
@@ -4144,7 +4279,7 @@ PSVNavBarGyroscopeButton.prototype._onAvailabilityChange = function(available) {
       this.show();
     }
     else {
-      throw new PSVError('Missing Three.js components: DeviceOrientationControls. Get them from threejs-examples package.');
+      throw new PSVError('Missing Three.js components: DeviceOrientationControls. Get them from three.js-examples package.');
     }
   }
 };
@@ -4783,6 +4918,15 @@ PSVUtils.fullscreenEvent = function() {
 PSVUtils.stayBetween = function(x, min, max) {
   return Math.max(min, Math.min(max, x));
 };
+
+/**
+ * Checks if a value is an integer
+ * @param {*} value
+ * @returns {boolean}
+ */
+PSVUtils.isInteger = Number.isInteger || function(value) {
+    return typeof value === 'number' && isFinite(value) && Math.floor(value) === value;
+  };
 
 /**
  * Returns the value of a given attribute in the panorama metadata

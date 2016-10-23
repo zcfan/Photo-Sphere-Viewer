@@ -1,9 +1,7 @@
 {
-  "name": "Photo-Sphere-Viewer-doc",
-  "version": "0.0.0",
-
+  "name": "photo-sphere-viewer-doc",
   "dependencies": {
     "Photo-Sphere-Viewer": "master",
-    "threejs-examples": "master"
+    "three.js-examples": "master"
   }
 }
