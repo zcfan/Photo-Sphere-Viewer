@@ -241,6 +241,10 @@ function PhotoSphereViewer(options) {
     latitude: this.config.default_lat
   }, false);
 
+  // load loader (!!)
+  this.loader = new PSVLoader(this);
+  this.loader.hide();
+
   // load navbar
   if (this.config.navbar) {
     this.container.classList.add('psv-container--has-navbar');

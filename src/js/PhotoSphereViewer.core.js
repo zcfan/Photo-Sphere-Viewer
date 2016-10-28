@@ -17,9 +17,7 @@ PhotoSphereViewer.prototype._loadXMP = function(panorama) {
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
       if (xhr.status === 200 || xhr.status === 201 || xhr.status === 202 || xhr.status === 0) {
-        if (self.loader) {
-          self.loader.setProgress(100);
-        }
+        self.loader.setProgress(100);
 
         var binary = xhr.responseText;
         var a = binary.indexOf('<x:xmpmeta'), b = binary.indexOf('</x:xmpmeta>');
@@ -54,14 +52,12 @@ PhotoSphereViewer.prototype._loadXMP = function(panorama) {
       }
     }
     else if (xhr.readyState === 3) {
-      if (self.loader) {
-        self.loader.setProgress(progress += 10);
-      }
+      self.loader.setProgress(progress += 10);
     }
   };
 
   xhr.onprogress = function(e) {
-    if (e.lengthComputable && self.loader) {
+    if (e.lengthComputable) {
       var new_progress = parseInt(e.loaded / e.total * 100);
       if (new_progress > progress) {
         progress = new_progress;
@@ -95,6 +91,14 @@ PhotoSphereViewer.prototype._loadTexture = function(panorama) {
 
     if (this.prop.isCubemap === false) {
       throw new PSVError('The viewer was initialized with an equirectangular panorama, cannot switch to cubemap.');
+    }
+
+    if (this.config.fisheye) {
+      console.warn('PhotoSphereViewer: fisheye effect with cubemap texture can generate distorsions.');
+    }
+
+    if (this.config.cache_texture === PhotoSphereViewer.DEFAULTS.cache_texture) {
+      this.config.cache_texture*= 6;
     }
 
     this.prop.isCubemap = true;
@@ -176,7 +180,7 @@ PhotoSphereViewer.prototype._loadCubemapTexture = function(panorama) {
   };
 
   var onprogress = function(i, e) {
-    if (e.lengthComputable && this.loader) {
+    if (e.lengthComputable) {
       var new_progress = parseInt(e.loaded / e.total * 100);
       if (new_progress > progress[i]) {
         progress[i] = new_progress;
@@ -311,7 +315,7 @@ PhotoSphereViewer.prototype._loadEquirectangularTexture = function(panorama) {
     };
 
     var onprogress = function(e) {
-      if (e.lengthComputable && self.loader) {
+      if (e.lengthComputable) {
         var new_progress = parseInt(e.loaded / e.total * 100);
         if (new_progress > progress) {
           progress = new_progress;
@@ -378,7 +382,15 @@ PhotoSphereViewer.prototype._createScene = function() {
   this.renderer.setSize(this.prop.size.width, this.prop.size.height);
   this.renderer.setPixelRatio(PhotoSphereViewer.SYSTEM.pixelRatio);
 
-  this.camera = new THREE.PerspectiveCamera(this.config.default_fov, this.prop.size.width / this.prop.size.height, 1, PhotoSphereViewer.SPHERE_RADIUS * 2);
+  var cameraDistance = PhotoSphereViewer.SPHERE_RADIUS;
+  if (this.prop.isCubemap) {
+    cameraDistance *= Math.sqrt(3);
+  }
+  if (this.config.fisheye) {
+    cameraDistance += PhotoSphereViewer.SPHERE_RADIUS;
+  }
+
+  this.camera = new THREE.PerspectiveCamera(this.config.default_fov, this.prop.size.width / this.prop.size.height, 1, cameraDistance);
   this.camera.position.set(0, 0, 0);
 
   if (this.config.gyroscope && PSVUtils.checkTHREE('DeviceOrientationControls')) {
@@ -435,7 +447,7 @@ PhotoSphereViewer.prototype._createScene = function() {
  */
 PhotoSphereViewer.prototype._createCubemap = function() {
   var geometry = new THREE.BoxGeometry(
-    PhotoSphereViewer.CUBE_LENGTH, PhotoSphereViewer.CUBE_LENGTH, PhotoSphereViewer.CUBE_LENGTH,
+    PhotoSphereViewer.SPHERE_RADIUS * 2, PhotoSphereViewer.SPHERE_RADIUS * 2, PhotoSphereViewer.SPHERE_RADIUS * 2,
     PhotoSphereViewer.CUBE_VERTICES, PhotoSphereViewer.CUBE_VERTICES, PhotoSphereViewer.CUBE_VERTICES
   );
 
@@ -448,9 +460,9 @@ PhotoSphereViewer.prototype._createCubemap = function() {
   }
 
   this.mesh = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials));
-  this.mesh.position.x -= PhotoSphereViewer.CUBE_LENGTH / 2;
-  this.mesh.position.y -= PhotoSphereViewer.CUBE_LENGTH / 2;
-  this.mesh.position.z -= PhotoSphereViewer.CUBE_LENGTH / 2;
+  this.mesh.position.x -= PhotoSphereViewer.SPHERE_RADIUS;
+  this.mesh.position.y -= PhotoSphereViewer.SPHERE_RADIUS;
+  this.mesh.position.z -= PhotoSphereViewer.SPHERE_RADIUS;
   this.mesh.applyMatrix(new THREE.Matrix4().makeScale(1, 1, -1));
 };
 

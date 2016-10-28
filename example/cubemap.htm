@@ -18,6 +18,11 @@
       width: 100%;
       height: 100%;
     }
+
+    .psv-button.custom-button {
+      font-size: 22px;
+      line-height: 20px;
+    }
   </style>
 </head>
 <body>
@@ -34,17 +39,141 @@
 <script src="../dist/photo-sphere-viewer.js"></script>
 
 <script>
+  var pano1 = [
+    'suntemple-cubemap/1.jpg',
+    'suntemple-cubemap/2.jpg',
+    'suntemple-cubemap/3.jpg',
+    'suntemple-cubemap/4.jpg',
+    'suntemple-cubemap/5.jpg',
+    'suntemple-cubemap/6.jpg'
+  ];
+
+  var pano2 = [
+    'simple-cubemap/1.png',
+    'simple-cubemap/2.png',
+    'simple-cubemap/3.png',
+    'simple-cubemap/4.png',
+    'simple-cubemap/5.png',
+    'simple-cubemap/6.png'
+  ];
+
   var PSV = new PhotoSphereViewer({
-    panorama: [
-      'suntemple-cubemap/1.jpg',
-      'suntemple-cubemap/2.jpg',
-      'suntemple-cubemap/3.jpg',
-      'suntemple-cubemap/4.jpg',
-      'suntemple-cubemap/5.jpg',
-      'suntemple-cubemap/6.jpg'
+    panorama: pano1,
+    navbar: [
+      'autorotate', 'zoom', 'download', 'markers',
+      'spacer-1',
+      {
+        title: 'Change image',
+        className: 'custom-button',
+        content: '↻',
+        onClick: (function () {
+          var i = false;
+
+          return function () {
+            i = !i;
+            PSV.clearMarkers();
+            PSV.setPanorama(i ? pano2 : pano1);
+          }
+        }())
+      },
+      'caption', 'gyroscope', 'fullscreen'
     ],
+    fisheye: true,
+    //webgl: false,
     container: 'photosphere',
-    loading_img: 'photosphere-logo.gif'
+    loading_img: 'photosphere-logo.gif',
+    markers: (function(){
+      var a = [];
+      for (var i=0; i<Math.PI*2; i+=Math.PI/4) {
+        for (var j=-Math.PI/2+Math.PI/4; j<Math.PI/2; j+=Math.PI/4) {
+          a.push({
+            id: '#' + a.length,
+            tooltip: '#' + a.length,
+            latitude: j,
+            longitude: i,
+            image: 'pin.png',
+            width: 32,
+            height: 32,
+            anchor: 'bottom center',
+            data: {
+              deletable: true
+            }
+          });
+        }
+      }
+
+      a.push({
+        id: 'lorem',
+        tooltip: {
+          content: 'Lorem ipsum dolor ist amet et consecturo.',
+          position: 'bottom right'
+        },
+        latitude: 0,
+        longitude: 0.20,
+        image: 'pin2.png',
+        width: 32,
+        height: 32,
+        anchor: 'bottom center'
+      });
+
+      a.push({
+        id: 'text',
+        html: 'This <b>is</b> text <img src="pin3.png" style="height: 24px; vertical-align: top;"/>',
+        anchor: 'bottom right',
+        style: {
+          color: 'white',
+          fontSize: '20px',
+          fontFamily: 'Helvetica, sans-serif',
+          textAlign: 'center'
+        },
+        latitude: -0.2,
+        longitude: 0.5
+      });
+
+      a.push({
+        id: 'polygon-sky',
+        svgStyle: {
+          fill: 'rgba(0, 190, 255, 0.1)'
+        },
+        polygon_rad: (function() {
+          var points = [];
+
+          for (var i = 0; i < Math.PI*2; i+= Math.PI/8) {
+            points.push(i);
+            points.push(Math.PI/8);
+          }
+
+          return points;
+        }())
+      });
+
+      return a;
+    }())
+  });
+
+  PSV.on('click', function(e) {
+    if (e.marker && !e.marker.isPolygon()) {
+      return;
+    }
+    PSV.addMarker({
+      id: '#' + Math.random(),
+      tooltip: 'Generated marker',
+      longitude: e.longitude,
+      latitude: e.latitude,
+      image: 'pin.png',
+      width: 32,
+      height: 32,
+      anchor: 'bottom center',
+      data: {
+        deletable: true
+      }
+    });
+  });
+
+  PSV.on('select-marker', function(marker) {
+    if (marker.data && marker.data.deletable) {
+      PSV.removeMarker(marker);
+    }
   });
 </script>
 

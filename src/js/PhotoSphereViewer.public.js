@@ -178,7 +178,7 @@ PhotoSphereViewer.prototype.destroy = function() {
  * Load a panorama file
  * If the "position" is not defined the camera will not move and the ongoing animation will continue
  * "config.transition" must be configured for "transition" to be taken in account
- * @param {string} path - URL of the new panorama file
+ * @param {string|string[]} path - URL of the new panorama file
  * @param {Object} [position] - latitude & longitude or x & y
  * @param {boolean} [transition=false]
  * @returns {promise}
@@ -193,6 +193,10 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
     position = undefined;
   }
 
+  if (transition && this.prop.isCubemap) {
+    throw new PSVError('Transition is not available with cubemap.');
+  }
+
   if (position) {
     this.cleanPosition(position);
 
@@ -204,17 +208,9 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
   var self = this;
 
   if (!transition || !this.config.transition || !this.scene) {
-    this.loader = new PSVLoader(this);
+    this.loader.show();
 
     this.prop.loading_promise = this._loadTexture(this.config.panorama)
-      .ensure(function() {
-        if (self.loader) {
-          self.loader.destroy();
-          self.loader = null;
-        }
-
-        self.prop.loading_promise = null;
-      })
       .then(function(texture) {
         self._setTexture(texture);
 
@@ -222,27 +218,26 @@ PhotoSphereViewer.prototype.setPanorama = function(path, position, transition) {
           self.rotate(position);
         }
       })
+      .ensure(function() {
+        self.loader.hide();
+
+        self.prop.loading_promise = null;
+      })
       .rethrow();
   }
   else {
     if (this.config.transition.loader) {
-      this.loader = new PSVLoader(this);
+      this.loader.show();
     }
 
     this.prop.loading_promise = this._loadTexture(this.config.panorama)
       .then(function(texture) {
-        if (self.loader) {
-          self.loader.destroy();
-          self.loader = null;
-        }
+        self.loader.hide();
 
         return self._transition(texture, position);
       })
       .ensure(function() {
-        if (self.loader) {
-          self.loader.destroy();
-          self.loader = null;
-        }
+        self.loader.hide();
 
         self.prop.loading_promise = null;
       })

@@ -12,6 +12,7 @@ PhotoSphereViewer.INERTIA_WINDOW = 300;
 
 /**
  * Radius of the THREE.SphereGeometry
+ * Half-length of the THREE.BoxGeometry
  * @type {int}
  */
 PhotoSphereViewer.SPHERE_RADIUS = 100;
@@ -21,12 +22,6 @@ PhotoSphereViewer.SPHERE_RADIUS = 100;
  * @type {int}
  */
 PhotoSphereViewer.SPHERE_VERTICES = 64;
-
-/**
- * Length of the THREE.BoxGeometry
- * @type {int}
- */
-PhotoSphereViewer.CUBE_LENGTH = 200;
 
 /**
  * Number of vertices of each side of the THREE.BoxGeometry
