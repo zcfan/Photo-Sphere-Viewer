@@ -2,11 +2,20 @@
 name: Photo Sphere Viewer
 # current version of the software
 version: 3.2.2
-# url of the download button
-downloadUrl: https://github.com/mistic100/Photo-Sphere-Viewer
 # licence of the software
 license: MIT License
 licenseUrl: http://opensource.org/licenses/MIT
+
+# download button
+download:
+  popup: true
+  url: https://github.com/mistic100/Photo-Sphere-Viewer/archive/3.2.2.zip
+  bower: Photo-Sphere-Viewer
+  npm: photo-sphere-viewer
+  cdn:
+    url:
+    img:
+    name:
 
 favicon: png
 
