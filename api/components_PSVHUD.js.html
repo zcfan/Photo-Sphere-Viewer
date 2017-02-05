@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>components/PSVHUD.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="PhotoSphereViewer.html">PhotoSphereViewer</a><ul class='methods'><li data-type='method'><a href="PhotoSphereViewer.html#animate">animate</a></li><li data-type='method'><a href="PhotoSphereViewer.html#applyRanges">applyRanges</a></li><li data-type='method'><a href="PhotoSphereViewer.html#cleanPosition">cleanPosition</a></li><li data-type='method'><a href="PhotoSphereViewer.html#clearPanoramaCache">clearPanoramaCache</a></li><li data-type='method'><a href="PhotoSphereViewer.html#destroy">destroy</a></li><li data-type='method'><a href="PhotoSphereViewer.html#getPanoramaCache">getPanoramaCache</a></li><li data-type='method'><a href="PhotoSphereViewer.html#getPosition">getPosition</a></li><li data-type='method'><a href="PhotoSphereViewer.html#getSize">getSize</a></li><li data-type='method'><a href="PhotoSphereViewer.html#getZoomLevel">getZoomLevel</a></li><li data-type='method'><a href="PhotoSphereViewer.html#isAutorotateEnabled">isAutorotateEnabled</a></li><li data-type='method'><a href="PhotoSphereViewer.html#isFullscreenEnabled">isFullscreenEnabled</a></li><li data-type='method'><a href="PhotoSphereViewer.html#isGyroscopeEnabled">isGyroscopeEnabled</a></li><li data-type='method'><a href="PhotoSphereViewer.html#load">load</a></li><li data-type='method'><a href="PhotoSphereViewer.html#preloadPanorama">preloadPanorama</a></li><li data-type='method'><a href="PhotoSphereViewer.html#render">render</a></li><li data-type='method'><a href="PhotoSphereViewer.html#rotate">rotate</a></li><li data-type='method'><a href="PhotoSphereViewer.html#setPanorama">setPanorama</a></li><li data-type='method'><a href="PhotoSphereViewer.html#sphericalCoordsToTextureCoords">sphericalCoordsToTextureCoords</a></li><li data-type='method'><a href="PhotoSphereViewer.html#sphericalCoordsToVector3">sphericalCoordsToVector3</a></li><li data-type='method'><a href="PhotoSphereViewer.html#startAutorotate">startAutorotate</a></li><li data-type='method'><a href="PhotoSphereViewer.html#startGyroscopeControl">startGyroscopeControl</a></li><li data-type='method'><a href="PhotoSphereViewer.html#startKeyboardControl">startKeyboardControl</a></li><li data-type='method'><a href="PhotoSphereViewer.html#stopAll">stopAll</a></li><li data-type='method'><a href="PhotoSphereViewer.html#stopAnimation">stopAnimation</a></li><li data-type='method'><a href="PhotoSphereViewer.html#stopAutorotate">stopAutorotate</a></li><li data-type='method'><a href="PhotoSphereViewer.html#stopGyroscopeControl">stopGyroscopeControl</a></li><li data-type='method'><a href="PhotoSphereViewer.html#stopKeyboardControl">stopKeyboardControl</a></li><li data-type='method'><a href="PhotoSphereViewer.html#textureCoordsToSphericalCoords">textureCoordsToSphericalCoords</a></li><li data-type='method'><a href="PhotoSphereViewer.html#toggleAutorotate">toggleAutorotate</a></li><li data-type='method'><a href="PhotoSphereViewer.html#toggleFullscreen">toggleFullscreen</a></li><li data-type='method'><a href="PhotoSphereViewer.html#toggleGyroscopeControl">toggleGyroscopeControl</a></li><li data-type='method'><a href="PhotoSphereViewer.html#vector3ToSphericalCoords">vector3ToSphericalCoords</a></li><li data-type='method'><a href="PhotoSphereViewer.html#vector3ToViewerCoords">vector3ToViewerCoords</a></li><li data-type='method'><a href="PhotoSphereViewer.html#viewerCoordsToVector3">viewerCoordsToVector3</a></li><li data-type='method'><a href="PhotoSphereViewer.html#zoom">zoom</a></li><li data-type='method'><a href="PhotoSphereViewer.html#zoomIn">zoomIn</a></li><li data-type='method'><a href="PhotoSphereViewer.html#zoomOut">zoomOut</a></li></ul></li><li><a href="PSVComponent.html">PSVComponent</a><ul class='methods'><li data-type='method'><a href="PSVComponent.html#create">create</a></li><li data-type='method'><a href="PSVComponent.html#destroy">destroy</a></li><li data-type='method'><a href="PSVComponent.html#hide">hide</a></li><li data-type='method'><a href="PSVComponent.html#show">show</a></li></ul></li><li><a href="PSVError.html">PSVError</a></li><li><a href="PSVHUD.html">PSVHUD</a><ul class='methods'><li data-type='method'><a href="PSVHUD.html#addMarker">addMarker</a></li><li data-type='method'><a href="PSVHUD.html#clearMarkers">clearMarkers</a></li><li data-type='method'><a href="PSVHUD.html#create">create</a></li><li data-type='method'><a href="PSVHUD.html#destroy">destroy</a></li><li data-type='method'><a href="PSVHUD.html#getCurrentMarker">getCurrentMarker</a></li><li data-type='method'><a href="PSVHUD.html#getMarker">getMarker</a></li><li data-type='method'><a href="PSVHUD.html#gotoMarker">gotoMarker</a></li><li data-type='method'><a href="PSVHUD.html#hide">hide</a></li><li data-type='method'><a href="PSVHUD.html#hideMarker">hideMarker</a></li><li data-type='method'><a href="PSVHUD.html#removeMarker">removeMarker</a></li><li data-type='method'><a href="PSVHUD.html#show">show</a></li><li data-type='method'><a href="PSVHUD.html#showMarker">showMarker</a></li><li data-type='method'><a href="PSVHUD.html#toggleMarker">toggleMarker</a></li><li data-type='method'><a href="PSVHUD.html#updateMarker">updateMarker</a></li><li data-type='method'><a href="PSVHUD.html#updatePositions">updatePositions</a></li></ul></li><li><a href="PSVLoader.html">PSVLoader</a><ul class='methods'><li data-type='method'><a href="PSVLoader.html#create">create</a></li><li data-type='method'><a href="PSVLoader.html#destroy">destroy</a></li><li data-type='method'><a href="PSVLoader.html#setProgress">setProgress</a></li></ul></li><li><a href="PSVMarker.html">PSVMarker</a><ul class='methods'><li data-type='method'><a href="PSVMarker.html#.getType">getType</a></li><li data-type='method'><a href="PSVMarker.html#destroy">destroy</a></li><li data-type='method'><a href="PSVMarker.html#isNormal">isNormal</a></li><li data-type='method'><a href="PSVMarker.html#isPolygon">isPolygon</a></li><li data-type='method'><a href="PSVMarker.html#isSvg">isSvg</a></li><li data-type='method'><a href="PSVMarker.html#update">update</a></li></ul></li><li><a href="PSVNavBar.html">PSVNavBar</a><ul class='methods'><li data-type='method'><a href="PSVNavBar.html#create">create</a></li><li data-type='method'><a href="PSVNavBar.html#destroy">destroy</a></li><li data-type='method'><a href="PSVNavBar.html#getNavbarButton">getNavbarButton</a></li><li data-type='method'><a href="PSVNavBar.html#hideNavbar">hideNavbar</a></li><li data-type='method'><a href="PSVNavBar.html#showNavbar">showNavbar</a></li><li data-type='method'><a href="PSVNavBar.html#toggleNavbar">toggleNavbar</a></li></ul></li><li><a href="PSVNavBarAutorotateButton.html">PSVNavBarAutorotateButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarAutorotateButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarAutorotateButton.html#destroy">destroy</a></li></ul></li><li><a href="PSVNavBarButton.html">PSVNavBarButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarButton.html#disable">disable</a></li><li data-type='method'><a href="PSVNavBarButton.html#enable">enable</a></li><li data-type='method'><a href="PSVNavBarButton.html#setIcon">setIcon</a></li><li data-type='method'><a href="PSVNavBarButton.html#toggleActive">toggleActive</a></li></ul></li><li><a href="PSVNavBarCaption.html">PSVNavBarCaption</a><ul class='methods'><li data-type='method'><a href="PSVNavBarCaption.html#setCaption">setCaption</a></li></ul></li><li><a href="PSVNavBarCustomButton.html">PSVNavBarCustomButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarCustomButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarCustomButton.html#destroy">destroy</a></li></ul></li><li><a href="PSVNavBarDownloadButton.html">PSVNavBarDownloadButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarDownloadButton.html#create">create</a></li></ul></li><li><a href="PSVNavBarFullscreenButton.html">PSVNavBarFullscreenButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarFullscreenButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarFullscreenButton.html#destroy">destroy</a></li></ul></li><li><a href="PSVNavBarGyroscopeButton.html">PSVNavBarGyroscopeButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarGyroscopeButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarGyroscopeButton.html#destroy">destroy</a></li></ul></li><li><a href="PSVNavBarMarkersButton.html">PSVNavBarMarkersButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarMarkersButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarMarkersButton.html#destroy">destroy</a></li><li data-type='method'><a href="PSVNavBarMarkersButton.html#hideMarkersList">hideMarkersList</a></li><li data-type='method'><a href="PSVNavBarMarkersButton.html#showMarkersList">showMarkersList</a></li><li data-type='method'><a href="PSVNavBarMarkersButton.html#toggleMarkersList">toggleMarkersList</a></li></ul></li><li><a href="PSVNavBarSpacer.html">PSVNavBarSpacer</a></li><li><a href="PSVNavBarZoomButton.html">PSVNavBarZoomButton</a><ul class='methods'><li data-type='method'><a href="PSVNavBarZoomButton.html#create">create</a></li><li data-type='method'><a href="PSVNavBarZoomButton.html#destroy">destroy</a></li></ul></li><li><a href="PSVPanel.html">PSVPanel</a><ul class='methods'><li data-type='method'><a href="PSVPanel.html#create">create</a></li><li data-type='method'><a href="PSVPanel.html#destroy">destroy</a></li><li data-type='method'><a href="PSVPanel.html#hidePanel">hidePanel</a></li><li data-type='method'><a href="PSVPanel.html#showPanel">showPanel</a></li></ul></li><li><a href="PSVTooltip.html">PSVTooltip</a><ul class='methods'><li data-type='method'><a href="PSVTooltip.html#create">create</a></li><li data-type='method'><a href="PSVTooltip.html#destroy">destroy</a></li><li data-type='method'><a href="PSVTooltip.html#hideTooltip">hideTooltip</a></li><li data-type='method'><a href="PSVTooltip.html#isTooltipVisible">isTooltipVisible</a></li><li data-type='method'><a href="PSVTooltip.html#showTooltip">showTooltip</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="PSVUtils.html">PSVUtils</a><ul class='methods'><li data-type='method'><a href="PSVUtils.html#.addClasses">addClasses</a></li><li data-type='method'><a href="PSVUtils.html#.animation">animation</a></li><li data-type='method'><a href="PSVUtils.html#.bound">bound</a></li><li data-type='method'><a href="PSVUtils.html#.checkTHREE">checkTHREE</a></li><li data-type='method'><a href="PSVUtils.html#.clone">clone</a></li><li data-type='method'><a href="PSVUtils.html#.deepmerge">deepmerge</a></li><li data-type='method'><a href="PSVUtils.html#.exitFullscreen">exitFullscreen</a></li><li data-type='method'><a href="PSVUtils.html#.fullscreenEvent">fullscreenEvent</a></li><li data-type='method'><a href="PSVUtils.html#.getClosest">getClosest</a></li><li data-type='method'><a href="PSVUtils.html#.getMaxTextureWidth">getMaxTextureWidth</a></li><li data-type='method'><a href="PSVUtils.html#.getShortestArc">getShortestArc</a></li><li data-type='method'><a href="PSVUtils.html#.getStyle">getStyle</a></li><li data-type='method'><a href="PSVUtils.html#.getWebGLCtx">getWebGLCtx</a></li><li data-type='method'><a href="PSVUtils.html#.getXMPValue">getXMPValue</a></li><li data-type='method'><a href="PSVUtils.html#.hasParent">hasParent</a></li><li data-type='method'><a href="PSVUtils.html#.isCanvasSupported">isCanvasSupported</a></li><li data-type='method'><a href="PSVUtils.html#.isFullscreenEnabled">isFullscreenEnabled</a></li><li data-type='method'><a href="PSVUtils.html#.isPlainObject">isPlainObject</a></li><li data-type='method'><a href="PSVUtils.html#.isWebGLSupported">isWebGLSupported</a></li><li data-type='method'><a href="PSVUtils.html#.mouseWheelEvent">mouseWheelEvent</a></li><li data-type='method'><a href="PSVUtils.html#.parseAngle">parseAngle</a></li><li data-type='method'><a href="PSVUtils.html#.parsePosition">parsePosition</a></li><li data-type='method'><a href="PSVUtils.html#.parseSpeed">parseSpeed</a></li><li data-type='method'><a href="PSVUtils.html#.removeClasses">removeClasses</a></li><li data-type='method'><a href="PSVUtils.html#.requestFullscreen">requestFullscreen</a></li><li data-type='method'><a href="PSVUtils.html#.throttle">throttle</a></li><li data-type='method'><a href="PSVUtils.html#.toggleClass">toggleClass</a></li></ul></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">components/PSVHUD.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * HUD class
+ * @param {PhotoSphereViewer} psv
+ * @extends PSVComponent
+ * @constructor
+ */
+function PSVHUD(psv) {
+  PSVComponent.call(this, psv);
+
+  /**
+   * SVG container
+   * @member {SVGElement}
+   * @readonly
+   */
+  this.$svg = null;
+
+  /**
+   * @member {Object.&lt;string, PSVMarker>}
+   */
+  this.markers = {};
+
+  /**
+   * @member {PSVMarker}
+   * @readonly
+   */
+  this.currentMarker = null;
+
+  /**
+   * @member {PSVMarker}
+   * @readonly
+   */
+  this.hoveringMarker = null;
+
+  this.create();
+}
+
+PSVHUD.prototype = Object.create(PSVComponent.prototype);
+PSVHUD.prototype.constructor = PSVHUD;
+
+PSVHUD.className = 'psv-hud';
+PSVHUD.publicMethods = [
+  'addMarker',
+  'removeMarker',
+  'updateMarker',
+  'clearMarkers',
+  'getMarker',
+  'getCurrentMarker',
+  'gotoMarker',
+  'hideMarker',
+  'showMarker',
+  'toggleMarker'
+];
+
+/**
+ * Creates the HUD
+ */
+PSVHUD.prototype.create = function() {
+  PSVComponent.prototype.create.call(this);
+
+  this.$svg = document.createElementNS(PSVUtils.svgNS, 'svg');
+  this.$svg.setAttribute('class', 'psv-hud-svg-container');
+  this.container.appendChild(this.$svg);
+
+  // Markers events via delegation
+  this.container.addEventListener('mouseenter', this, true);
+  this.container.addEventListener('mouseleave', this, true);
+  this.container.addEventListener('mousemove', this, true);
+
+  // Viewer events
+  this.psv.on('click', this);
+  this.psv.on('render', this);
+};
+
+/**
+ * Destroys the HUD
+ */
+PSVHUD.prototype.destroy = function() {
+  this.clearMarkers(false);
+
+  this.container.removeEventListener('mouseenter', this);
+  this.container.removeEventListener('mouseleave', this);
+  this.container.removeEventListener('mousemove', this);
+
+  this.psv.off('click', this);
+  this.psv.off('render', this);
+
+  delete this.$svg;
+
+  PSVComponent.prototype.destroy.call(this);
+};
+
+/**
+ * Handles events
+ * @param {Event} e
+ * @private
+ */
+PSVHUD.prototype.handleEvent = function(e) {
+  switch (e.type) {
+    // @formatter:off
+    case 'mouseenter':  this._onMouseEnter(e);        break;
+    case 'mouseleave':  this._onMouseLeave(e);        break;
+    case 'mousemove':   this._onMouseMove(e);         break;
+    case 'click':       this._onClick(e.args[0], e);  break;
+    case 'render':      this.updatePositions();       break;
+    // @formatter:on
+  }
+};
+
+/**
+ * Adds a new marker to HUD
+ * @param {Object} properties
+ * @param {boolean} [render=true]
+ * @returns {PSVMarker}
+ */
+PSVHUD.prototype.addMarker = function(properties, render) {
+  if (!properties.id) {
+    throw new PSVError('missing marker id');
+  }
+
+  if (this.markers[properties.id]) {
+    throw new PSVError('marker "' + properties.id + '" already exists');
+  }
+
+  var marker = new PSVMarker(properties, this.psv);
+
+  if (marker.isNormal()) {
+    this.container.appendChild(marker.$el);
+  }
+  else {
+    this.$svg.appendChild(marker.$el);
+  }
+
+  this.markers[marker.id] = marker;
+
+  if (render !== false) {
+    this.updatePositions();
+  }
+
+  return marker;
+};
+
+/**
+ * Gets a marker by it's id or external object
+ * @param {*} marker
+ * @returns {PSVMarker}
+ */
+PSVHUD.prototype.getMarker = function(marker) {
+  var id = typeof marker === 'object' ? marker.id : marker;
+
+  if (!this.markers[id]) {
+    throw new PSVError('cannot find marker "' + id + '"');
+  }
+
+  return this.markers[id];
+};
+
+/**
+ * Gets the current selected marker
+ * @returns {PSVMarker}
+ */
+PSVHUD.prototype.getCurrentMarker = function() {
+  return this.currentMarker;
+};
+
+/**
+ * Updates a marker
+ * @param {Object} properties
+ * @param {boolean} [render=true]
+ * @returns {PSVMarker}
+ */
+PSVHUD.prototype.updateMarker = function(properties, render) {
+  var marker = this.getMarker(properties);
+
+  marker.update(properties);
+
+  if (render !== false) {
+    this.updatePositions();
+  }
+
+  return marker;
+};
+
+/**
+ * Removes a marker
+ * @param {*} marker
+ * @param {boolean} [render=true]
+ */
+PSVHUD.prototype.removeMarker = function(marker, render) {
+  marker = this.getMarker(marker);
+
+  if (marker.isNormal()) {
+    this.container.removeChild(marker.$el);
+  }
+  else {
+    this.$svg.removeChild(marker.$el);
+  }
+
+  if (this.hoveringMarker == marker) {
+    this.psv.tooltip.hideTooltip();
+  }
+
+  marker.destroy();
+  delete this.markers[marker.id];
+
+  if (render !== false) {
+    this.updatePositions();
+  }
+};
+
+/**
+ * Removes all markers
+ * @param {boolean} [render=true]
+ */
+PSVHUD.prototype.clearMarkers = function(render) {
+  Object.keys(this.markers).forEach(function(marker) {
+    this.removeMarker(marker, false);
+  }, this);
+
+  if (render !== false) {
+    this.updatePositions();
+  }
+};
+
+/**
+ * Goes to a specific marker
+ * @param {*} marker
+ * @param {string|int} [duration] {@link PhotoSphereViewer#animate}
+ * @return {Promise}  A promise that will be resolved When the animation finis
+ */
+PSVHUD.prototype.gotoMarker = function(marker, duration) {
+  marker = this.getMarker(marker);
+  return this.psv.animate(marker, duration);
+};
+
+/**
+ * Hides a marker
+ * @param {*} marker
+ */
+PSVHUD.prototype.hideMarker = function(marker) {
+  this.getMarker(marker).visible = false;
+  this.updatePositions();
+};
+
+/**
+ * Shows a marker
+ * @param {*} marker
+ */
+PSVHUD.prototype.showMarker = function(marker) {
+  this.getMarker(marker).visible = true;
+  this.updatePositions();
+};
+
+/**
+ * Toggles a marker
+ * @param {*} marker
+ */
+PSVHUD.prototype.toggleMarker = function(marker) {
+  this.getMarker(marker).visible ^= true;
+  this.updatePositions();
+};
+
+/**
+ * Updates the visibility and the position of all markers
+ */
+PSVHUD.prototype.updatePositions = function() {
+  var rotation = !this.psv.isGyroscopeEnabled() ? 0 : this.psv.camera.rotation.z / Math.PI * 180;
+
+  for (var id in this.markers) {
+    var marker = this.markers[id];
+    var isVisible = marker.visible;
+
+    if (isVisible &amp;&amp; marker.isPolygon()) {
+      var positions = this._getPolygonPositions(marker);
+      isVisible = positions.length > 2;
+
+      if (isVisible) {
+        marker.position2D = this._getPolygonDimensions(marker, positions);
+
+        var points = '';
+        positions.forEach(function(pos) {
+          points += pos.x + ',' + pos.y + ' ';
+        });
+
+        marker.$el.setAttributeNS(null, 'points', points);
+      }
+    }
+    else if (isVisible) {
+      var position = this._getMarkerPosition(marker);
+      isVisible = this._isMarkerVisible(marker, position);
+
+      if (isVisible) {
+        marker.position2D = position;
+
+        marker.$el.style.transform = 'translate3D(' + position.x + 'px, ' + position.y + 'px, ' + '0px)' +
+          (!marker.lockRotation &amp;&amp; rotation ? ' rotateZ(' + rotation + 'deg)' : '');
+      }
+    }
+
+    PSVUtils.toggleClass(marker.$el, 'psv-marker--visible', isVisible);
+  }
+};
+
+/**
+ * Determines if a point marker is visible&lt;br>
+ * It tests if the point is in the general direction of the camera, then check if it's in the viewport
+ * @param {PSVMarker} marker
+ * @param {Point} position
+ * @returns {boolean}
+ * @private
+ */
+PSVHUD.prototype._isMarkerVisible = function(marker, position) {
+  return marker.position3D.dot(this.psv.prop.direction) > 0 &amp;&amp;
+    position.x + marker.width >= 0 &amp;&amp;
+    position.x - marker.width &lt;= this.psv.prop.size.width &amp;&amp;
+    position.y + marker.height >= 0 &amp;&amp;
+    position.y - marker.height &lt;= this.psv.prop.size.height;
+};
+
+/**
+ * Computes HUD coordinates of a marker
+ * @param {PSVMarker} marker
+ * @returns {Point}
+ * @private
+ */
+PSVHUD.prototype._getMarkerPosition = function(marker) {
+  if (marker._dynamicSize) {
+    // make the marker visible to get it's size
+    marker.$el.classList.add('psv-marker--transparent');
+    var rect = marker.$el.getBoundingClientRect();
+    marker.$el.classList.remove('psv-marker--transparent');
+
+    marker.width = rect.right - rect.left;
+    marker.height = rect.bottom - rect.top;
+  }
+
+  var position = this.psv.vector3ToViewerCoords(marker.position3D);
+
+  position.x -= marker.width * marker.anchor.left;
+  position.y -= marker.height * marker.anchor.top;
+
+  return position;
+};
+
+/**
+ * Computes HUD coordinates of each point of a polygon&lt;br>
+ * It handles points behind the camera by creating intermediary points suitable for the projector
+ * @param {PSVMarker} marker
+ * @returns {Point[]}
+ * @private
+ */
+PSVHUD.prototype._getPolygonPositions = function(marker) {
+  var nbVectors = marker.positions3D.length;
+
+  // compute if each vector is visible
+  var positions3D = marker.positions3D.map(function(vector) {
+    return {
+      vector: vector,
+      visible: vector.dot(this.psv.prop.direction) > 0
+    };
+  }, this);
+
+  // get pairs of visible/invisible vectors for each invisible vector connected to a visible vector
+  var toBeComputed = [];
+  positions3D.forEach(function(pos, i) {
+    if (!pos.visible) {
+      var neighbours = [
+        i === 0 ? positions3D[nbVectors - 1] : positions3D[i - 1],
+        i === nbVectors - 1 ? positions3D[0] : positions3D[i + 1]
+      ];
+
+      neighbours.forEach(function(neighbour) {
+        if (neighbour.visible) {
+          toBeComputed.push({
+            visible: neighbour,
+            invisible: pos,
+            index: i
+          });
+        }
+      });
+    }
+  });
+
+  // compute intermediary vector for each pair (the loop is reversed for splice to insert at the right place)
+  toBeComputed.reverse().forEach(function(pair) {
+    positions3D.splice(pair.index, 0, {
+      vector: this._getPolygonIntermediaryPoint(pair.visible.vector, pair.invisible.vector),
+      visible: true
+    });
+  }, this);
+
+  // translate vectors to screen pos
+  return positions3D
+    .filter(function(pos) {
+      return pos.visible;
+    })
+    .map(function(pos) {
+      return this.psv.vector3ToViewerCoords(pos.vector);
+    }, this);
+};
+
+/**
+ * Given one point in the same direction of the camera and one point behind the camera,
+ * computes an intermediary point on the great circle delimiting the half sphere visible by the camera.
+ * The point is shifted by .01 rad because the projector cannot handle points exactly on this circle.
+ * {@link http://math.stackexchange.com/a/1730410/327208}
+ * @param P1 {THREE.Vector3}
+ * @param P2 {THREE.Vector3}
+ * @returns {THREE.Vector3}
+ * @private
+ */
+PSVHUD.prototype._getPolygonIntermediaryPoint = function(P1, P2) {
+  var C = this.psv.prop.direction.clone().normalize();
+  var N = new THREE.Vector3().crossVectors(P1, P2).normalize();
+  var V = new THREE.Vector3().crossVectors(N, P1).normalize();
+  var H = new THREE.Vector3().addVectors(P1.clone().multiplyScalar(-C.dot(V)), V.clone().multiplyScalar(C.dot(P1))).normalize();
+  var a = new THREE.Vector3().crossVectors(H, C);
+  return H.applyAxisAngle(a, 0.01).multiplyScalar(PhotoSphereViewer.SPHERE_RADIUS);
+};
+
+/**
+ * Computes the boundaries positions of a polygon marker
+ * @param {PSVMarker} marker - alters width and height
+ * @param {Point[]} positions
+ * @returns {Point}
+ * @private
+ */
+PSVHUD.prototype._getPolygonDimensions = function(marker, positions) {
+  var minX = +Infinity;
+  var minY = +Infinity;
+  var maxX = -Infinity;
+  var maxY = -Infinity;
+
+  positions.forEach(function(pos) {
+    minX = Math.min(minX, pos.x);
+    minY = Math.min(minY, pos.y);
+    maxX = Math.max(maxX, pos.x);
+    maxY = Math.max(maxY, pos.y);
+  });
+
+  marker.width = maxX - minX;
+  marker.height = maxY - minY;
+
+  return {
+    x: minX,
+    y: minY
+  };
+};
+
+/**
+ * Handles mouse enter events, show the tooltip
+ * @param {MouseEvent} e
+ * @private
+ */
+PSVHUD.prototype._onMouseEnter = function(e) {
+  var marker;
+  if (e.target &amp;&amp; (marker = e.target.psvMarker) &amp;&amp; marker.tooltip &amp;&amp; !marker.isPolygon()) {
+    this.hoveringMarker = marker;
+
+    this.psv.tooltip.showTooltip({
+      content: marker.tooltip.content,
+      position: marker.tooltip.position,
+      left: marker.position2D.x,
+      top: marker.position2D.y,
+      box: {
+        width: marker.width,
+        height: marker.height
+      }
+    });
+  }
+};
+
+/**
+ * Handles mouse leave events, hide the tooltip
+ * @param {MouseEvent} e
+ * @private
+ */
+PSVHUD.prototype._onMouseLeave = function(e) {
+  var marker;
+  if (e.target &amp;&amp; (marker = e.target.psvMarker)) {
+    // do not hide if we enter the tooltip itself while hovering a polygon
+    if (marker.isPolygon() &amp;&amp; e.relatedTarget &amp;&amp; PSVUtils.hasParent(e.relatedTarget, this.psv.tooltip.container)) {
+      return;
+    }
+
+    this.hoveringMarker = null;
+
+    this.psv.tooltip.hideTooltip();
+  }
+};
+
+/**
+ * Handles mouse move events, refresh the tooltip for polygon markers
+ * @param {MouseEvent} e
+ * @private
+ */
+PSVHUD.prototype._onMouseMove = function(e) {
+  if (!this.psv.prop.moving) {
+    var marker;
+    // do not hide if we enter the tooltip while hovering a polygon
+    if (e.target &amp;&amp; (marker = e.target.psvMarker) &amp;&amp; marker.tooltip &amp;&amp; marker.isPolygon() ||
+      e.target &amp;&amp; PSVUtils.hasParent(e.target, this.psv.tooltip.container) &amp;&amp; (marker = this.hoveringMarker)) {
+
+      this.hoveringMarker = marker;
+
+      var boundingRect = this.psv.container.getBoundingClientRect();
+
+      this.psv.tooltip.showTooltip({
+        content: marker.tooltip.content,
+        position: marker.tooltip.position,
+        top: e.clientY - boundingRect.top - this.psv.config.tooltip.arrow_size / 2,
+        left: e.clientX - boundingRect.left - this.psv.config.tooltip.arrow_size,
+        box: { // separate the tooltip from the cursor
+          width: this.psv.config.tooltip.arrow_size * 2,
+          height: this.psv.config.tooltip.arrow_size * 2
+        }
+      });
+    }
+    else if (this.hoveringMarker &amp;&amp; this.hoveringMarker.isPolygon()) {
+      this.psv.tooltip.hideTooltip();
+    }
+  }
+};
+
+/**
+ * Handles mouse click events, select the marker and open the panel if necessary
+ * @param {Object} data
+ * @param {Event} e
+ * @private
+ */
+PSVHUD.prototype._onClick = function(data, e) {
+  var marker;
+  if (data.target &amp;&amp; (marker = PSVUtils.getClosest(data.target, '.psv-marker')) &amp;&amp; marker.psvMarker) {
+    this.currentMarker = marker.psvMarker;
+    this.psv.trigger('select-marker', marker.psvMarker);
+
+    if (this.psv.config.click_event_on_marker) {
+      // add the marker to event data
+      data.marker = marker.psvMarker;
+    }
+    else {
+      e.stopPropagation();
+    }
+  }
+  else if (this.currentMarker) {
+    this.psv.trigger('unselect-marker', this.currentMarker);
+    this.currentMarker = null;
+  }
+
+  if (marker &amp;&amp; marker.psvMarker &amp;&amp; marker.psvMarker.content) {
+    this.psv.panel.showPanel(marker.psvMarker.content);
+  }
+  else if (this.psv.panel.prop.opened) {
+    e.stopPropagation();
+    this.psv.panel.hidePanel();
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Sun Feb 05 2017 21:12:49 GMT+0100 (Paris, Madrid) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

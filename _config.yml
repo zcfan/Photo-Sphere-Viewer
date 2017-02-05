@@ -5,6 +5,8 @@ version: 3.2.2
 # licence of the software
 license: MIT License
 licenseUrl: http://opensource.org/licenses/MIT
+# extension of the favicon, blank to disable
+favicon: png
 
 # download button
 download:
@@ -17,7 +19,8 @@ download:
     img:
     name:
 
-favicon: png
+# set this to true to replace the generated header navbar by _includes/navbar.html
+customNavBar: true
 
 # list of additional links on the right of the top menu
 headerLinks:
