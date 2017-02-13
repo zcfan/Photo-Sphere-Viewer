@@ -837,7 +837,7 @@ PhotoSphereViewer.DEFAULTS = {
   },
   mousewheel: true,
   mousemove: true,
-  mousemovewithoutclick: false,
+  feature: false,
   keyboard: true,
   gyroscope: false,
   move_inertia: true,
@@ -884,7 +884,7 @@ PhotoSphereViewer.prototype._bindEvents = function() {
   document.addEventListener(PhotoSphereViewer.SYSTEM.fullscreenEvent, this);
 
   // all interation events are binded to the HUD only
-  if (!this.config.mousemovewithoutclick && this.config.mousemove) {
+  if (!this.config.feature && this.config.mousemove) {
     this.hud.container.style.cursor = 'move';
     this.hud.container.addEventListener('mousedown', this);
     this.hud.container.addEventListener('touchstart', this);
@@ -895,13 +895,13 @@ PhotoSphereViewer.prototype._bindEvents = function() {
   }
 
   // this config and 'mousemove' shouldn't be true at the same time.
-  if (this.config.mousemovewithoutclick) {
+  if (this.config.feature) {
     this.hud.container.style.cursor = 'move';
-    this.hud.container.addEventListener('mouseenter', this);
+    document.addEventListener('mouseenter', this);
     this.hud.container.addEventListener('touchstart', this);
-    window.addEventListener('mouseleave', this);
+    document.addEventListener('mouseleave', this);
     window.addEventListener('touchend', this);
-    this.hud.container.addEventListener('mousemove', this);
+    document.addEventListener('mousemove', this);
     this.hud.container.addEventListener('touchmove', this);
   }
 
@@ -1200,7 +1200,7 @@ PhotoSphereViewer.prototype._click = function(evt) {
  * @private
  */
 PhotoSphereViewer.prototype._onMouseMove = function(evt) {
-  if (this.config.mousemovewithoutclick || evt.buttons !== 0) {
+  if (this.config.feature || evt.buttons !== 0) {
     evt.preventDefault();
     this._move(evt);
   }

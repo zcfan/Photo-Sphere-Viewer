@@ -103,7 +103,7 @@ PhotoSphereViewer.DEFAULTS = {
   },
   mousewheel: true,
   mousemove: true,
-  mousemovewithoutclick: false,
+  feature: false,
   keyboard: true,
   gyroscope: false,
   move_inertia: true,
