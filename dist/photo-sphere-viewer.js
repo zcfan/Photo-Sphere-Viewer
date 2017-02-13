@@ -1,7 +1,7 @@
 /*!
  * Photo Sphere Viewer 3.2.2
  * Copyright (c) 2014-2015 Jérémy Heleine
- * Copyright (c) 2015-2016 Damien "Mistic" Sorel
+ * Copyright (c) 2015-2017 Damien "Mistic" Sorel
  * Licensed under MIT (http://opensource.org/licenses/MIT)
  */
 
@@ -837,6 +837,7 @@ PhotoSphereViewer.DEFAULTS = {
   },
   mousewheel: true,
   mousemove: true,
+  mousemovewithoutclick: false,
   keyboard: true,
   gyroscope: false,
   move_inertia: true,
@@ -883,11 +884,22 @@ PhotoSphereViewer.prototype._bindEvents = function() {
   document.addEventListener(PhotoSphereViewer.SYSTEM.fullscreenEvent, this);
 
   // all interation events are binded to the HUD only
-  if (this.config.mousemove) {
+  if (!this.config.mousemovewithoutclick && this.config.mousemove) {
     this.hud.container.style.cursor = 'move';
     this.hud.container.addEventListener('mousedown', this);
     this.hud.container.addEventListener('touchstart', this);
     window.addEventListener('mouseup', this);
+    window.addEventListener('touchend', this);
+    this.hud.container.addEventListener('mousemove', this);
+    this.hud.container.addEventListener('touchmove', this);
+  }
+
+  // this config and 'mousemove' shouldn't be true at the same time.
+  if (this.config.mousemovewithoutclick) {
+    this.hud.container.style.cursor = 'move';
+    this.hud.container.addEventListener('mouseenter', this);
+    this.hud.container.addEventListener('touchstart', this);
+    this.hud.container.addEventListener('mouseleave', this);
     window.addEventListener('touchend', this);
     this.hud.container.addEventListener('mousemove', this);
     this.hud.container.addEventListener('touchmove', this);
@@ -922,6 +934,8 @@ PhotoSphereViewer.prototype.handleEvent = function(evt) {
     case 'touchend':    this._onTouchEnd(evt);    break;
     case 'mousemove':   this._onMouseMove(evt);   break;
     case 'touchmove':   this._onTouchMove(evt);   break;
+    case 'mouseenter':   this._onMouseEnter(evt);   break;
+    case 'mouseleave':   this._onMouseLeave(evt);   break;
     case PhotoSphereViewer.SYSTEM.fullscreenEvent:  this._fullscreenToggled();  break;
     case PhotoSphereViewer.SYSTEM.mouseWheelEvent:  this._onMouseWheel(evt);      break;
     // @formatter:on
@@ -985,6 +999,15 @@ PhotoSphereViewer.prototype._onKeyDown = function(evt) {
 };
 
 /**
+ * The user wants to move without click mouse button
+ * @param {MouseEvent} evt
+ * @private
+ */
+PhotoSphereViewer.prototype._onMouseEnter = function(evt) {
+  this._startMove(evt);
+};
+
+/**
  * The user wants to move
  * @param {MouseEvent} evt
  * @private
@@ -1042,6 +1065,15 @@ PhotoSphereViewer.prototype._startZoom = function(evt) {
   this.prop.pinch_dist = Math.sqrt(Math.pow(t[0].x - t[1].x, 2) + Math.pow(t[0].y - t[1].y, 2));
   this.prop.moving = false;
   this.prop.zooming = true;
+};
+
+/**
+ * The user wants to stop moving without click mouse button
+ * @param {MouseEvent} evt
+ * @private
+ */
+PhotoSphereViewer.prototype._onMouseLeave = function(evt) {
+  this._stopMove(evt);
 };
 
 /**
@@ -1168,7 +1200,7 @@ PhotoSphereViewer.prototype._click = function(evt) {
  * @private
  */
 PhotoSphereViewer.prototype._onMouseMove = function(evt) {
-  if (evt.buttons !== 0) {
+  if (this.config.mousemovewithoutclick || evt.buttons !== 0) {
     evt.preventDefault();
     this._move(evt);
   }
