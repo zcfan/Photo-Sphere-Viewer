@@ -899,7 +899,7 @@ PhotoSphereViewer.prototype._bindEvents = function() {
     this.hud.container.style.cursor = 'move';
     this.hud.container.addEventListener('mouseenter', this);
     this.hud.container.addEventListener('touchstart', this);
-    this.hud.container.addEventListener('mouseleave', this);
+    window.addEventListener('mouseleave', this);
     window.addEventListener('touchend', this);
     this.hud.container.addEventListener('mousemove', this);
     this.hud.container.addEventListener('touchmove', this);
