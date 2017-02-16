@@ -20,9 +20,9 @@ PhotoSphereViewer.prototype._bindEvents = function() {
   // this config and 'mousemove' shouldn't be true at the same time.
   if (this.config.feature) {
     this.hud.container.style.cursor = 'move';
-    document.addEventListener('mouseenter', this);
+    document.body.addEventListener('mouseenter', this);
     this.hud.container.addEventListener('touchstart', this);
-    document.addEventListener('mouseleave', this);
+    document.body.addEventListener('mouseleave', this);
     window.addEventListener('touchend', this);
     document.addEventListener('mousemove', this);
     this.hud.container.addEventListener('touchmove', this);
