@@ -20,7 +20,6 @@ PhotoSphereViewer.prototype._bindEvents = function() {
   // this config and 'mousemove' shouldn't be true at the same time.
   if (this.config.feature) {
     this.hud.container.style.cursor = 'move';
-    document.body.addEventListener('mouseenter', this);
     this.hud.container.addEventListener('touchstart', this);
     document.body.addEventListener('mouseleave', this);
     window.addEventListener('touchend', this);
@@ -119,15 +118,6 @@ PhotoSphereViewer.prototype._onKeyDown = function(evt) {
       latitude: this.prop.latitude + dLat * this.prop.move_speed * this.prop.vFov
     });
   }
-};
-
-/**
- * The user wants to move without click mouse button
- * @param {MouseEvent} evt
- * @private
- */
-PhotoSphereViewer.prototype._onMouseEnter = function(evt) {
-  this._startMove(evt);
 };
 
 /**
@@ -323,6 +313,10 @@ PhotoSphereViewer.prototype._click = function(evt) {
  * @private
  */
 PhotoSphereViewer.prototype._onMouseMove = function(evt) {
+  if (this.config.feature && !this.prop.moving) {
+    this._startMove(evt)
+  }
+
   if (this.config.feature || evt.buttons !== 0) {
     evt.preventDefault();
     this._move(evt);
